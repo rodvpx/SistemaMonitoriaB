@@ -22,7 +22,7 @@ public class Supervisor extends Usuario {
 	}
 
 	@Override
-	protected boolean cadastrarNovoUsuario() throws SQLException {
+	protected boolean cadastrarNovoUsuario() throws SQLException { //oi
 		return false;
 	}
 

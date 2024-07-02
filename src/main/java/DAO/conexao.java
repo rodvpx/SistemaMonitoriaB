@@ -17,6 +17,6 @@ public class conexao {
         if (conexao == null || conexao.isClosed()) {
             conexao = DriverManager.getConnection(url, user, password);
         }
-        return conexao;
+        return conexao; //oi
     }
 }

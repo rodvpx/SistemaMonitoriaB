@@ -104,7 +104,6 @@ public class App {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                    //aluno.cadastrarNovoUsuario(usuarios);
                     break;
                 case 2:
                     System.out.println("Informe o código do supervisor:");
