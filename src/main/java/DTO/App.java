@@ -1,9 +1,6 @@
 package DTO;
 
-<<<<<<< HEAD
 import java.sql.SQLException;
-=======
->>>>>>> origin/master
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -47,16 +44,6 @@ public class App {
                     System.out.print("Senha: ");
                     String senha = sc.nextLine();
 
-<<<<<<< HEAD
-=======
-                    // Busca usuário com o email informado
-                    Usuario usuario = Usuario.buscarPorEmail(usuarios, email);
-                    if (usuario != null) {
-                        usuario.login(email, senha);
-                    } else {
-                        System.out.println("Login inválido. Por favor, verifique seu email e senha.");
-                    }
->>>>>>> origin/master
                     break;
 
                 case 2:
@@ -108,7 +95,6 @@ public class App {
 
                     // Cria um novo aluno e cadastra na lista de usuários
                     Aluno aluno = new Aluno(matriculaAluno, nomeAluno, emailAluno, senhaAluno);
-<<<<<<< HEAD
                     try {
                         if (aluno.cadastrarNovoUsuario()) {
                             System.out.println("Aluno cadastrado com sucesso!");
@@ -118,9 +104,6 @@ public class App {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     } //oi
-=======
-                    aluno.cadastrarNovoUsuario(usuarios);
->>>>>>> origin/master
                     break;
                 case 2:
                     System.out.println("Informe o código do supervisor:");
@@ -135,11 +118,7 @@ public class App {
                     // Cria um novo supervisor e cadastra na lista de usuários
                     Supervisor supervisor = new Supervisor(codigoSupervisor, nomeSupervisor, emailSupervisor,
                             senhaSupervisor);
-<<<<<<< HEAD
                     //supervisor.cadastrarNovoUsuario(usuarios);
-=======
-                    supervisor.cadastrarNovoUsuario(usuarios);
->>>>>>> origin/master
                     break;
 
                 default:

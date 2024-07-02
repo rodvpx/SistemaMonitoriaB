@@ -1,12 +1,9 @@
 package DTO;
 
-<<<<<<< HEAD
 import java.sql.SQLException;
 
-=======
->>>>>>> origin/master
 public class Supervisor extends Usuario {
-	
+
 	public Supervisor(String matricula, String nome, String email, String senha) {
 		super(matricula, nome, email, senha);
 		//TODO Auto-generated constructor stub
@@ -16,7 +13,7 @@ public class Supervisor extends Usuario {
 	Monitor monitor;
 	Monitor disciplina;
 
-	
+
 
 	@Override
 	protected boolean validar() {
@@ -24,7 +21,6 @@ public class Supervisor extends Usuario {
 		throw new UnsupportedOperationException("Unimplemented method 'validar'");
 	}
 
-<<<<<<< HEAD
 	@Override
 	protected boolean cadastrarNovoUsuario() throws SQLException {
 		return false;
@@ -35,31 +31,29 @@ public class Supervisor extends Usuario {
 		return false;
 	}
 
-=======
->>>>>>> origin/master
 	public boolean aceitarMonitor (Monitor monitor) {
 		return true;
-		
+
 	}
-	
+
 	public void excluirMonitor (Monitor monitor) {
-		
+
 	}
-	
+
 	public void adicionarDisciplina (Monitor disciplina) {
-		
+
 	}
-	
+
 	public void excluirDisciplina (Monitor disciplina) {
-		
+
 	}
-	
+
 	public void designarMonitor (Monitor monitor, Monitor disciplina) {
-		
+
 	}
-	
+
 	public void ajustarHorarioMonitoria (Monitoria monitoria, Monitoria horario, Monitoria local) {
-		
+
 	}
 
 	public String getDepartamento() {
