@@ -103,7 +103,7 @@ public class App {
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
-                    }
+                    } //oi
                     break;
                 case 2:
                     System.out.println("Informe o código do supervisor:");

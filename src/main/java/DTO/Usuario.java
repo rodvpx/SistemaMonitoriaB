@@ -22,7 +22,6 @@ public abstract class Usuario {
 
     protected abstract boolean login();
 
-  //ooi
 
 		/*
 		//antigo metodo cadastrar usuario
