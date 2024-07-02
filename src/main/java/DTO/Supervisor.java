@@ -1,7 +1,10 @@
 package DTO;
 
+<<<<<<< HEAD
 import java.sql.SQLException;
 
+=======
+>>>>>>> origin/master
 public class Supervisor extends Usuario {
 	
 	public Supervisor(String matricula, String nome, String email, String senha) {
@@ -21,6 +24,7 @@ public class Supervisor extends Usuario {
 		throw new UnsupportedOperationException("Unimplemented method 'validar'");
 	}
 
+<<<<<<< HEAD
 	@Override
 	protected boolean cadastrarNovoUsuario() throws SQLException {
 		return false;
@@ -31,6 +35,8 @@ public class Supervisor extends Usuario {
 		return false;
 	}
 
+=======
+>>>>>>> origin/master
 	public boolean aceitarMonitor (Monitor monitor) {
 		return true;
 		
