@@ -1,8 +1,11 @@
 package DTO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
 import static DAO.conexao.getConexao;
 
 public class Aluno extends Usuario {
@@ -40,10 +43,22 @@ public class Aluno extends Usuario {
 
     }
 
-
     @Override
-    protected boolean login() {
-        return false;
+    protected boolean login(String email, String senha) throws SQLException {
+        String sql = "select * from usuario where email = ? and senha = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+            sta.setString(1, email);
+            sta.setString(2, senha);
+            ResultSet rs = sta.executeQuery();
+            if (rs.next()) {
+                System.out.println("Usuario validado com sucesso.");
+                return true;
+            } else {
+                System.out.println("Usuario não encontrado ou senha incorreta");
+                return false;
+            }
+        }
     }
 
     public void visualizarMonitorias(ArrayList<Monitoria> monitoria) {

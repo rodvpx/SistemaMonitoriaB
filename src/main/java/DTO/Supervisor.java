@@ -27,7 +27,7 @@ public class Supervisor extends Usuario {
 	}
 
 	@Override
-	protected boolean login() {
+	protected boolean login(String email, String senha) throws SQLException {
 		return false;
 	}
 

@@ -44,6 +44,17 @@ public class App {
                     System.out.print("Senha: ");
                     String senha = sc.nextLine();
 
+                    Aluno aluno = new Aluno(null, null, email, senha);
+
+                    try {
+                        if (aluno.login(email, senha)) {
+                            System.out.println("Login realizado com sucesso!");
+                        } else {
+                            System.out.println("Falha no login. Verifique suas credenciais.");
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
                 case 2:

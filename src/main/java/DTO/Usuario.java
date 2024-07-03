@@ -20,7 +20,7 @@ public abstract class Usuario {
 
     protected abstract boolean cadastrarNovoUsuario() throws SQLException, SQLException;
 
-    protected abstract boolean login();
+    protected abstract boolean login(String email, String senha) throws  SQLException;
 
     public String getNome() {
         return nome;
