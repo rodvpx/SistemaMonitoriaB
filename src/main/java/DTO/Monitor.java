@@ -9,16 +9,16 @@ public class Monitor extends Aluno {
 	private Local local;
 
 	public Monitor(String matricula, String nome, String email, String senha) {
-		super(matricula, nome, email, senha);
+		super(matricula, nome, email, senha, "M");
 		//TODO Auto-generated constructor stub
 	}
-	
+
 	public void definirHorario(Aluno disciplina, Horario horario, Local local) {
-		
+
 	}
-	
+
 	public void consultarHorarios (ArrayList<Horario> horario) {
-		
+
 	}
 
 	public ArrayList<String> getDisciplina() {

@@ -1,6 +1,11 @@
 package DTO;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static DAO.conexao.getConexao;
 
 public abstract class Usuario {
 
@@ -8,19 +13,59 @@ public abstract class Usuario {
     protected String email;
     protected String senha;
     protected String matricula;
+    protected String tipo;
 
-    public Usuario(String matricula, String nome, String email, String senha) {
+    public Usuario(String matricula, String nome, String email, String senha, String tipo) {
         this.matricula = matricula;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.tipo = tipo;
     }
 
-    protected abstract boolean validar();
+    protected boolean validar() {
+        // Implement validation logic if needed
+        return true;
+    }
 
-    protected abstract boolean cadastrarNovoUsuario() throws SQLException, SQLException;
+    public boolean cadastrarNovoUsuario() throws SQLException {
+        String sql = "INSERT INTO usuario (nome, email, senha, matricula, tipo) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
 
-    protected abstract boolean login(String email, String senha) throws  SQLException;
+            sta.setString(1, nome);
+            sta.setString(2, email);
+            sta.setString(3, senha);
+            sta.setString(4, matricula);
+            sta.setString(5, tipo);
+            sta.executeUpdate();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean login(String email, String senha) throws SQLException {
+        String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+            sta.setString(1, email);
+            sta.setString(2, senha);
+            ResultSet rs = sta.executeQuery();
+            if (rs.next()) {
+                System.out.println("Usuário validado com sucesso.");
+                return true;
+            } else {
+                System.out.println("Usuário não encontrado ou senha incorreta.");
+                return false;
+            }
+        }
+    }
+
+    // Getters e Setters
 
     public String getNome() {
         return nome;
@@ -54,4 +99,11 @@ public abstract class Usuario {
         this.matricula = matricula;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 }
