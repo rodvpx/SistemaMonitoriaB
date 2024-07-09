@@ -48,7 +48,7 @@ public abstract class Usuario {
         return false;
     }
 
-    public boolean login(String email, String senha) throws SQLException {
+    public String login(String email, String senha) throws SQLException {
         String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
@@ -57,10 +57,10 @@ public abstract class Usuario {
             ResultSet rs = sta.executeQuery();
             if (rs.next()) {
                 System.out.println("Usuário validado com sucesso.");
-                return true;
+                return rs.getString("tipo");
             } else {
                 System.out.println("Usuário não encontrado ou senha incorreta.");
-                return false;
+                return null;
             }
         }
     }

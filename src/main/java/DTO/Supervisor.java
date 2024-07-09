@@ -3,48 +3,59 @@ package DTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import static DAO.conexao.getConexao;
 
 public class Supervisor extends Usuario {
 
-	public Supervisor(String matricula, String nome, String email, String senha) {
-		super(matricula, nome, email, senha, "S");
-	}
+    public Supervisor(String matricula, String nome, String email, String senha) {
+        super(matricula, nome, email, senha, "S");
+    }
 
-	public boolean promoverAlunoParaMonitor(Aluno aluno) {
-		String sql = "UPDATE usuario SET tipo = 'M' WHERE email = ?";
-		try (Connection conn = getConexao();
-			 PreparedStatement sta = conn.prepareStatement(sql)) {
+    public boolean criarMonitoria(Disciplina disciplina, Horario horario, Local local) {
+        Monitoria monitoria = new Monitoria(disciplina, horario, local, this.matricula);
+        try {
+            return monitoria.salvarMonitoria();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-			sta.setString(1, aluno.getEmail());
-			sta.executeUpdate();
-			return true;
+    public boolean promoverAlunoParaMonitor(Aluno aluno) {
+        String sql = "UPDATE usuario SET tipo = 'M' WHERE email = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+            sta.setString(1, aluno.getEmail());
+            sta.executeUpdate();
+            return true;
 
-	// Métodos específicos de Supervisor
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	public void excluirMonitor(Monitor monitor) {
-		// Implementação do método
-	}
+    // Métodos específicos de Supervisor
 
-	public void adicionarDisciplina(Monitor disciplina) {
-		// Implementação do método
-	}
+    public void excluirMonitor(Monitor monitor) {
+        // Implementação do método
+    }
 
-	public void excluirDisciplina(Monitor disciplina) {
-		// Implementação do método
-	}
+    public void adicionarDisciplina(Monitor disciplina) {
+        // Implementação do método
+    }
 
-	public void designarMonitor(Monitor monitor, Monitor disciplina) {
-		// Implementação do método
-	}
+    public void excluirDisciplina(Monitor disciplina) {
+        // Implementação do método
+    }
 
-	public void ajustarHorarioMonitoria(Monitoria monitoria, Monitoria horario, Monitoria local) {
-		// Implementação do método
-	}
+    public void designarMonitor(Monitor monitor, Monitor disciplina) {
+        // Implementação do método
+    }
+
+    public void ajustarHorarioMonitoria(Monitoria monitoria, Monitoria horario, Monitoria local) {
+        // Implementação do método
+    }
 }
