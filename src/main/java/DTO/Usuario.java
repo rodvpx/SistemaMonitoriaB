@@ -1,11 +1,11 @@
 package DTO;
 
+import static DAO.conexao.*;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static DAO.conexao.getConexao;
 
 public abstract class Usuario {
 
@@ -57,14 +57,17 @@ public abstract class Usuario {
             ResultSet rs = sta.executeQuery();
             if (rs.next()) {
                 System.out.println("Usuário validado com sucesso.");
-                return rs.getString("tipo");
+                return "sucesso"; // Altere conforme necessário
             } else {
                 System.out.println("Usuário não encontrado ou senha incorreta.");
-                return null;
+                return "falha"; // Altere conforme necessário
             }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Adicione para depuração
+            throw e; // Re-lança a exceção para tratamento adequado
         }
     }
-
+    
     // Getters e Setters
 
     public String getNome() {
