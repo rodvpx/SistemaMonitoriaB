@@ -25,7 +25,7 @@ public class Monitoria {
 
 
     public boolean salvarMonitoria() throws SQLException {
-        String sql = "insert into monitoria (disciplina, horario, local, codigo_supervisor) values (?, ?, ?, ?)";
+        String sql = "INSERT INTO monitoria (disciplina, horario, local, codigo_supervisor) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
@@ -33,13 +33,15 @@ public class Monitoria {
             sta.setInt(2, horario.getId());
             sta.setInt(3, local.getId());
             sta.setString(4, codigoSupervisor);
-            sta.executeUpdate();
-            return true;
+
+            int rowsAffected = sta.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
     public void inscreverAluno(Aluno aluno) {
 

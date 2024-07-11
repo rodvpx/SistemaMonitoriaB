@@ -13,9 +13,7 @@ import static DAO.conexao.getConexao;
 public class App {
 
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
-
         int option = 0;
 
         do {
@@ -33,35 +31,8 @@ public class App {
                         return;
 
                     case 1:
-                        System.out.print("Email: ");
-                        String email = sc.nextLine();
-                        System.out.print("Senha: ");
-                        String senha = sc.nextLine();
-
-                        Usuario usuario = new Aluno(null, null, email, senha); // Pode ser Aluno, Supervisor ou Monitor
-
-                        try {
-                            String tipoUsuario = usuario.login(email, senha);
-                            if (tipoUsuario != null) {
-                                System.out.println("Login realizado com sucesso!");
-
-                                // Chamar o submenu adequado com base no tipo de usuário retornado
-                                if ("S".equals(tipoUsuario)) {
-                                    Supervisor supervisor = new Supervisor(null, null, email, senha);
-                                    subMenuSupervisor(supervisor, sc);
-                                }
-                                Aluno aluno = new Aluno(null, null, email, senha);
-                                subMenuAluno(aluno, sc);
-
-                            } else {
-                                System.out.println("Falha no login. Verifique suas credenciais.");
-                            }
-
-                        } catch (SQLException e) {
-                            System.out.println("Erro durante o login: " + e.getMessage());
-                        }
+                        login(sc);
                         break;
-
 
                     case 2:
                         subMenuUser(sc);
@@ -74,7 +45,6 @@ public class App {
 
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida. Somente números inteiros.");
-                sc.nextLine(); // Limpar o buffer
                 continue;
             }
         } while (option != 0);
@@ -82,8 +52,37 @@ public class App {
         sc.close();
     }
 
-    public static void subMenuUser(Scanner sc) {
+    public static void login(Scanner sc) {
+        System.out.print("Email: ");
+        String email = sc.nextLine();
+        System.out.print("Senha: ");
+        String senha = sc.nextLine();
 
+        Usuario usuario = new Aluno(null, null, email, senha); // Pode ser Aluno, Supervisor ou Monitor
+
+        try {
+            String tipoUsuario = usuario.login(email, senha);
+            if (tipoUsuario != null) {
+                System.out.println("Login realizado com sucesso!");
+
+                if ("S".equals(tipoUsuario)) {
+                    Supervisor supervisor = new Supervisor(null, null, email, senha);
+                    subMenuSupervisor(supervisor, sc);
+                } else {
+                    Aluno aluno = new Aluno(null, null, email, senha);
+                    subMenuAluno(aluno, sc);
+                }
+
+            } else {
+                System.out.println("Falha no login. Verifique suas credenciais.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro durante o login: " + e.getMessage());
+        }
+    }
+
+    public static void subMenuUser(Scanner sc) {
         int option = 0;
 
         do {
@@ -100,47 +99,11 @@ public class App {
                         return;
 
                     case 1:
-                        System.out.println("Informe a matrícula do aluno:");
-                        String matriculaAluno = sc.nextLine();
-                        System.out.println("Informe o nome do aluno:");
-                        String nomeAluno = sc.nextLine();
-                        System.out.println("Informe o email do aluno:");
-                        String emailAluno = sc.nextLine();
-                        System.out.println("Informe a senha do aluno:");
-                        String senhaAluno = sc.nextLine();
-
-                        Aluno aluno = new Aluno(matriculaAluno, nomeAluno, emailAluno, senhaAluno);
-                        try {
-                            if (aluno.cadastrarNovoUsuario()) {
-                                System.out.println("Aluno cadastrado com sucesso!");
-                            } else {
-                                System.out.println("Erro ao cadastrar aluno.");
-                            }
-                        } catch (SQLException e) {
-                            System.out.println("Erro durante o cadastro do aluno: " + e.getMessage());
-                        }
+                        cadastrarAluno(sc);
                         break;
 
                     case 2:
-                        System.out.println("Informe o código do supervisor:");
-                        String codigoSupervisor = sc.nextLine();
-                        System.out.println("Informe o nome do supervisor:");
-                        String nomeSupervisor = sc.nextLine();
-                        System.out.println("Informe o email do supervisor:");
-                        String emailSupervisor = sc.nextLine();
-                        System.out.println("Informe a senha do supervisor:");
-                        String senhaSupervisor = sc.nextLine();
-
-                        Supervisor supervisor = new Supervisor(codigoSupervisor, nomeSupervisor, emailSupervisor, senhaSupervisor);
-                        try {
-                            if (supervisor.cadastrarNovoUsuario()) {
-                                System.out.println("Supervisor cadastrado com sucesso!");
-                            } else {
-                                System.out.println("Erro ao cadastrar supervisor.");
-                            }
-                        } catch (SQLException e) {
-                            System.out.println("Erro durante o cadastro do supervisor: " + e.getMessage());
-                        }
+                        cadastrarSupervisor(sc);
                         break;
 
                     default:
@@ -150,20 +113,71 @@ public class App {
 
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida. Por favor, digite um número inteiro.");
-                sc.nextLine(); // Limpar o buffer
                 continue;
             }
         } while (option != 0);
     }
 
-    public static void subMenuSupervisor(Supervisor supervisor, Scanner sc) throws SQLException {
+    public static void cadastrarAluno(Scanner sc) {
+        System.out.println("Informe a matrícula do aluno:");
+        String matriculaAluno = sc.nextLine();
+        System.out.println("Informe o nome do aluno:");
+        String nomeAluno = sc.nextLine();
+        System.out.println("Informe o email do aluno:");
+        String emailAluno = sc.nextLine();
+        System.out.println("Informe a senha do aluno:");
+        String senhaAluno = sc.nextLine();
 
-        List<Disciplina> disciplinas = listarDisciplinas();
-        List<Local> locais = listarLocais();
+        Aluno aluno = new Aluno(matriculaAluno, nomeAluno, emailAluno, senhaAluno);
+        try {
+            if (aluno.cadastrarNovoUsuario()) {
+                System.out.println("Aluno cadastrado com sucesso!");
+            } else {
+                System.out.println("Erro ao cadastrar aluno.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro durante o cadastro do aluno: " + e.getMessage());
+        }
+    }
 
+    public static void cadastrarSupervisor(Scanner sc) {
+        System.out.println("Informe o código do supervisor:");
+        String codigoSupervisor = sc.nextLine();
+        System.out.println("Informe o nome do supervisor:");
+        String nomeSupervisor = sc.nextLine();
+        System.out.println("Informe o email do supervisor:");
+        String emailSupervisor = sc.nextLine();
+        System.out.println("Informe a senha do supervisor:");
+        String senhaSupervisor = sc.nextLine();
+
+        Supervisor supervisor = new Supervisor(codigoSupervisor, nomeSupervisor, emailSupervisor, senhaSupervisor);
+        try {
+            if (supervisor.cadastrarNovoUsuario()) {
+                System.out.println("Supervisor cadastrado com sucesso!");
+            } else {
+                System.out.println("Erro ao cadastrar supervisor.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro durante o cadastro do supervisor: " + e.getMessage());
+        }
+    }
+
+    public static void subMenuSupervisor(Supervisor supervisor, Scanner sc) {
         int option = 0;
+        String codigoDisciplina;
 
         do {
+            List<Local> locais;
+            List<Disciplina> disciplinas;
+
+            try {
+                locais = listarLocais();
+                disciplinas = listarDisciplinas();
+            } catch (SQLException e) {
+                System.out.println("Erro ao carregar disciplinas e locais: " + e.getMessage());
+                return;
+            }
+
             System.out.println("--- MENU DO SUPERVISOR ---");
             System.out.println("1 - Promover Aluno para Monitor");
             System.out.println("2 - Adicionar Disciplinas");
@@ -179,6 +193,50 @@ public class App {
                         return;
 
                     case 1:
+                        promoverAlunoParaMonitor(supervisor, sc);
+                        break;
+
+                    case 2:
+                        adicionarDisciplinas(disciplinas, sc);
+                        break;
+
+                    case 3:
+                        adicionarLocais(locais, sc);
+                        break;
+
+                    case 4:
+                        criarMonitoria(supervisor, disciplinas, locais, sc);
+                        break;
+
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                        break;
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor, digite um número inteiro.");
+                continue;
+            }
+
+        } while (option != 0);
+    }
+
+    public static void promoverAlunoParaMonitor(Supervisor supervisor, Scanner sc) {
+        boolean promoveuAluno = false;
+
+        do {
+            System.out.println("--- PROMOVER ALUNO PARA MONITOR ---");
+            System.out.println("1 - Informar email do aluno");
+            System.out.println("0 - Voltar");
+
+            try {
+                int option = Integer.parseInt(sc.nextLine().trim());
+
+                switch (option) {
+                    case 0:
+                        return; // Retorna ao menu anterior sem tentar promover aluno
+
+                    case 1:
                         System.out.println("Informe o email do aluno a ser promovido:");
                         String emailAluno = sc.nextLine();
 
@@ -186,18 +244,45 @@ public class App {
 
                         if (supervisor.promoverAlunoParaMonitor(aluno)) {
                             System.out.println("Aluno promovido a monitor com sucesso!");
+                            promoveuAluno = true;
                         } else {
                             System.out.println("Erro ao promover aluno.");
                         }
                         break;
 
-                    case 2:
-                        // ADICIONAR DISCIPLINAS
-                        System.out.println("Lista de Disciplinas:");
-                        for (Disciplina disciplina : disciplinas) {
-                            System.out.println(disciplina.getCodigo() + " - " + disciplina.getNome());
-                        }
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                        break;
+                }
 
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor, digite um número inteiro.");
+                continue;
+            }
+
+        } while (!promoveuAluno);
+    }
+
+    public static void adicionarDisciplinas(List<Disciplina> disciplinas, Scanner sc) {
+        int subOptionDisciplinas = 0;
+
+        do {
+            System.out.println("Lista de Disciplinas:");
+            for (Disciplina disciplina : disciplinas) {
+                System.out.println(disciplina.getCodigo() + " - " + disciplina.getNome());
+            }
+            System.out.println("-------------------");
+            System.out.println("1 - Adicionar Disciplina");
+            System.out.println("0 - Voltar");
+
+            try {
+                subOptionDisciplinas = Integer.parseInt(sc.nextLine().trim());
+
+                switch (subOptionDisciplinas) {
+                    case 0:
+                        break; // Volta ao menu anterior
+
+                    case 1:
                         System.out.println("Nome da Disciplina:");
                         String nomeDisciplina = sc.nextLine();
                         System.out.println("Código da Disciplina:");
@@ -210,13 +295,39 @@ public class App {
                         }
                         break;
 
-                    case 3:
-                        // ADICIONAR LOCAIS
-                        System.out.println("Lista de Locais:");
-                        for (Local local : locais) {
-                            System.out.println(local.getId() + " - " + local.getSala());
-                        }
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                        break;
+                }
 
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor, digite um número inteiro.");
+                continue;
+            }
+
+        } while (subOptionDisciplinas != 0);
+    }
+
+    public static void adicionarLocais(List<Local> locais, Scanner sc) {
+        int subOptionLocais = 0;
+
+        do {
+            System.out.println("Lista de Locais:");
+            for (Local local : locais) {
+                System.out.println(local.getId() + " - " + local.getSala());
+            }
+            System.out.println("-------------------");
+            System.out.println("1 - Adicionar Local");
+            System.out.println("0 - Voltar");
+
+            try {
+                subOptionLocais = Integer.parseInt(sc.nextLine().trim());
+
+                switch (subOptionLocais) {
+                    case 0:
+                        break; // Volta ao menu anterior
+
+                    case 1:
                         System.out.println("Sala:");
                         String sala = sc.nextLine();
                         System.out.println("Capacidade:");
@@ -229,60 +340,6 @@ public class App {
                         }
                         break;
 
-                    case 4:
-                        // CRIAR MONITORIA
-                        System.out.println("Cadastro de Monitoria");
-
-                        System.out.println("Selecione a disciplina:");
-                        for (Disciplina disciplina : disciplinas) {
-                            System.out.println(disciplina.getCodigo() + " - " + disciplina.getNome());
-                        }
-                        System.out.print("Código da disciplina: ");
-                        codigoDisciplina = sc.nextLine();
-                        Disciplina disciplinaEscolhida = null;
-
-                        for (Disciplina disciplina : disciplinas) {
-                            if (disciplina.getCodigo().equals(codigoDisciplina)) {
-                                disciplinaEscolhida = disciplina;
-                                break;
-                            }
-                        }
-
-                        if (disciplinaEscolhida == null) {
-                            System.out.println("Disciplina não encontrada.");
-                            break;
-                        }
-
-                        System.out.println("Selecione o horário:");
-                        System.out.print("Dia da semana:");
-                        String diaSemana = sc.nextLine();
-                        System.out.print("Período:");
-                        String periodo = sc.nextLine();
-                        Horario horarioEscolhido = new Horario(diaSemana, periodo);
-
-                        System.out.println("Selecione o local:");
-                        for (Local local : locais) {
-                            System.out.println(local.getId() + " - " + local.getSala());
-                        }
-                        System.out.print("ID do local: ");
-                        int idLocal = Integer.parseInt(sc.nextLine().trim());
-                        Local localEscolhido = null;
-
-                        for (Local local : locais) {
-                            if (local.getId() == idLocal) {
-                                localEscolhido = local;
-                                break;
-                            }
-                        }
-
-                        if (localEscolhido == null) {
-                            System.out.println("Local não encontrado.");
-                            break;
-                        }
-
-                        supervisor.criarMonitoria(disciplinaEscolhida, horarioEscolhido, localEscolhido);
-                        break;
-
                     default:
                         System.out.println("Opção inválida. Tente novamente.");
                         break;
@@ -290,13 +347,65 @@ public class App {
 
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida. Por favor, digite um número inteiro.");
-                sc.nextLine(); // Limpar o buffer
                 continue;
             }
-        } while (option != 0);
+
+        } while (subOptionLocais != 0);
     }
 
-    // Método para listar todas as disciplinas disponíveis
+    public static void criarMonitoria(Supervisor supervisor, List<Disciplina> disciplinas, List<Local> locais, Scanner sc) {
+        do {
+            System.out.println("Cadastro de Monitoria");
+
+            System.out.println("Selecione a disciplina (ou 0 para voltar):");
+            for (Disciplina disciplina : disciplinas) {
+                System.out.println(disciplina.getCodigo() + " - " + disciplina.getNome());
+            }
+            System.out.print("Código da disciplina: ");
+            String codigoDisciplina = sc.nextLine();
+
+            if (codigoDisciplina.equals("0")) {
+                break; // Voltar ao menu anterior
+            }
+
+            Disciplina disciplinaEscolhida = disciplinas.stream()
+                    .filter(d -> d.getCodigo().equals(codigoDisciplina))
+                    .findFirst()
+                    .orElse(null);
+
+            if (disciplinaEscolhida == null) {
+                System.out.println("Disciplina não encontrada.");
+                continue;
+            }
+
+            System.out.print("Dia da semana:");
+            String diaSemana = sc.nextLine();
+            System.out.print("Horário:");
+            String horas = sc.nextLine();
+            Horario horarioEscolhido = new Horario(diaSemana, horas);
+
+            System.out.println("Selecione o local:");
+            for (Local local : locais) {
+                System.out.println(local.getId() + " - " + local.getSala());
+            }
+            System.out.print("ID do local: ");
+            int idLocal = Integer.parseInt(sc.nextLine().trim());
+            Local localEscolhido = locais.stream()
+                    .filter(l -> l.getId() == idLocal)
+                    .findFirst()
+                    .orElse(null);
+
+            if (localEscolhido == null) {
+                System.out.println("Local não encontrado.");
+                continue;
+            }
+
+            supervisor.criarMonitoria(disciplinaEscolhida, horarioEscolhido, localEscolhido);
+            break;
+
+        } while (true);
+    }
+
     public static List<Disciplina> listarDisciplinas() throws SQLException {
         List<Disciplina> disciplinas = new ArrayList<>();
 
@@ -316,7 +425,6 @@ public class App {
         return disciplinas;
     }
 
-    // Método para listar todos os locais disponíveis
     public static List<Local> listarLocais() throws SQLException {
         List<Local> locais = new ArrayList<>();
 
@@ -337,7 +445,7 @@ public class App {
         return locais;
     }
 
-    public static boolean inserirDisciplina(String nome, String codigo) throws SQLException {
+    public static boolean inserirDisciplina(String nome, String codigo) {
         String sql = "INSERT INTO disciplina (nome, codigo, monitor) VALUES (?, ?, ?)";
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
@@ -353,7 +461,7 @@ public class App {
         }
     }
 
-    public static boolean inserirLocais(String sala, String capacidade) throws SQLException {
+    public static boolean inserirLocais(String sala, String capacidade) {
         String sql = "INSERT INTO local (sala, capacidade) VALUES (?, ?)";
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {

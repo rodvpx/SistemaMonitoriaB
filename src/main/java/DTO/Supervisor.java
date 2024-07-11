@@ -12,15 +12,22 @@ public class Supervisor extends Usuario {
         super(matricula, nome, email, senha, "S");
     }
 
-    public boolean criarMonitoria(Disciplina disciplina, Horario horario, Local local) {
-        Monitoria monitoria = new Monitoria(disciplina, horario, local, this.matricula);
+    public void criarMonitoria(Disciplina disciplina, Horario horario, Local local) {
+        String matriculaSupervisor = this.getMatricula(); // Supondo que `getMatricula()` retorna a matrícula do supervisor
+        Monitoria monitoria = new Monitoria(disciplina, horario, local, matriculaSupervisor);
         try {
-            return monitoria.salvarMonitoria();
+            boolean sucesso = monitoria.salvarMonitoria();
+            if (sucesso) {
+                System.out.println("Monitoria criada com sucesso!");
+            } else {
+                System.out.println("Erro ao criar monitoria.");
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            System.out.println("Erro ao criar monitoria: " + e.getMessage());
         }
     }
+
+
 
     public boolean promoverAlunoParaMonitor(Aluno aluno) {
         String sql = "UPDATE usuario SET tipo = 'M' WHERE email = ?";

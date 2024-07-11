@@ -4,9 +4,9 @@ public class Horario {
 
     private int id;
     private String diaSemana;
-    private String periodo;
+    private String horas;
 
-    public Horario(String diaSemana, String periodo) {
+    public Horario(String diaSemana, String horas) {
     }
 
     public int getId() {
@@ -26,10 +26,10 @@ public class Horario {
     }
 
     public String getPeriodo() {
-        return periodo;
+        return horas;
     }
 
-    public void setPeriodo(String periodo) {
-        this.periodo = periodo;
+    public void setPeriodo(String horas) {
+        this.horas = horas;
     }
 }
