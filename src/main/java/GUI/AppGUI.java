@@ -24,7 +24,7 @@ public class AppGUI extends JFrame {
 
     public AppGUI() {
         setTitle("Sistema de Monitoria");
-        setSize(400, 200);
+        setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         inicializarTelaPrincipal();
