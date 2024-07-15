@@ -210,13 +210,13 @@ public class AppGUI extends JFrame {
 
     private void mostrarTelaCadastroAluno() {
         JFrame telaCadastroAluno = new JFrame("Cadastro de Aluno");
-        telaCadastroAluno.setSize(400, 300);
+        telaCadastroAluno.setSize(400, 400); // Aumentar o tamanho da janela para acomodar novos campos
         telaCadastroAluno.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         telaCadastroAluno.setLocationRelativeTo(null);
-
+    
         JPanel painel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-
+    
         JLabel tituloLabel = new JLabel("CADASTRO DE ALUNO");
         tituloLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gbc.gridx = 0;
@@ -225,75 +225,106 @@ public class AppGUI extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 10, 20, 10); // Margens
         painel.add(tituloLabel, gbc);
-
+    
         JLabel matriculaLabel = new JLabel("Matrícula:");
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(5, 10, 5, 5); // Margens
         painel.add(matriculaLabel, gbc);
-
+    
         JTextField matriculaInput = new JTextField(15);
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(5, 5, 5, 10); // Margens
         painel.add(matriculaInput, gbc);
-
+    
         JLabel nomeLabel = new JLabel("Nome:");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(5, 10, 5, 5); // Margens
         painel.add(nomeLabel, gbc);
-
+    
         JTextField nomeInput = new JTextField(15);
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(5, 5, 5, 10); // Margens
         painel.add(nomeInput, gbc);
-
-        JButton botaoCadastrar = new JButton("Cadastrar");
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(20, 0, 0, 0); // Margens
-        painel.add(botaoCadastrar, gbc);
-
-        JButton botaoVoltar = new JButton("Voltar");
+    
+        JLabel emailLabel = new JLabel("Email:");
         gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(5, 10, 5, 5); // Margens
+        painel.add(emailLabel, gbc);
+    
+        JTextField emailInput = new JTextField(15);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(5, 5, 5, 10); // Margens
+        painel.add(emailInput, gbc);
+    
+        JLabel senhaLabel = new JLabel("Senha:");
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(5, 10, 5, 5); // Margens
+        painel.add(senhaLabel, gbc);
+    
+        JPasswordField senhaInput = new JPasswordField(15);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(5, 5, 5, 10); // Margens
+        painel.add(senhaInput, gbc);
+    
+        JButton botaoCadastrar = new JButton("Cadastrar");
+        gbc.gridx = 1;
+        gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(20, 10, 0, 0); // Margens
+        gbc.insets = new Insets(20, 5, 0, 10); // Margens
+        painel.add(botaoCadastrar, gbc);
+    
+        JButton botaoVoltar = new JButton("Voltar");
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(20, 10, 0, 5); // Margens
         painel.add(botaoVoltar, gbc);
-
+    
         botaoCadastrar.addActionListener(e -> {
             String matricula = matriculaInput.getText();
             String nome = nomeInput.getText();
-
+            String email = emailInput.getText();
+            String senha = new String(senhaInput.getPassword());
+    
             // Lógica para cadastrar aluno
-            // Exemplo: alunoService.cadastrarAluno(matricula, nome);
-            mostrarMensagem("Aluno cadastrado com sucesso!", "Cadastro de Aluno", JOptionPane.INFORMATION_MESSAGE);
+            // Exemplo: alunoService.cadastrarAluno(matricula, nome, email, senha);
+            JOptionPane.showMessageDialog(telaCadastroAluno, "Aluno cadastrado com sucesso!", "Cadastro de Aluno", JOptionPane.INFORMATION_MESSAGE);
         });
-
+    
         botaoVoltar.addActionListener(e -> {
             telaCadastroAluno.dispose(); // Fecha a janela de cadastro de aluno ao clicar em voltar
         });
-
+    
         telaCadastroAluno.add(painel);
         telaCadastroAluno.setVisible(true);
     }
 
     private void mostrarTelaCadastroSupervisor() {
         JFrame telaCadastroSupervisor = new JFrame("Cadastro de Supervisor");
-        telaCadastroSupervisor.setSize(400, 300);
+        telaCadastroSupervisor.setSize(400, 400); // Aumentar o tamanho da janela para acomodar novos campos
         telaCadastroSupervisor.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         telaCadastroSupervisor.setLocationRelativeTo(null);
-
+    
         JPanel painel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-
+    
         JLabel tituloLabel = new JLabel("CADASTRO DE SUPERVISOR");
         tituloLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gbc.gridx = 0;
@@ -302,65 +333,97 @@ public class AppGUI extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 10, 20, 10); // Margens
         painel.add(tituloLabel, gbc);
-
+    
         JLabel cpfLabel = new JLabel("CPF:");
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(5, 10, 5, 5); // Margens
         painel.add(cpfLabel, gbc);
-
+    
         JTextField cpfInput = new JTextField(15);
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(5, 5, 5, 10); // Margens
         painel.add(cpfInput, gbc);
-
+    
         JLabel nomeLabel = new JLabel("Nome:");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(5, 10, 5, 5); // Margens
         painel.add(nomeLabel, gbc);
-
+    
         JTextField nomeInput = new JTextField(15);
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(5, 5, 5, 10); // Margens
         painel.add(nomeInput, gbc);
-
-        JButton botaoCadastrar = new JButton("Cadastrar");
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(20, 0, 0, 0); // Margens
-        painel.add(botaoCadastrar, gbc);
-
-        JButton botaoVoltar = new JButton("Voltar");
+    
+        JLabel emailLabel = new JLabel("Email:");
         gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(5, 10, 5, 5); // Margens
+        painel.add(emailLabel, gbc);
+    
+        JTextField emailInput = new JTextField(15);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(5, 5, 5, 10); // Margens
+        painel.add(emailInput, gbc);
+    
+        JLabel senhaLabel = new JLabel("Senha:");
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(5, 10, 5, 5); // Margens
+        painel.add(senhaLabel, gbc);
+    
+        JPasswordField senhaInput = new JPasswordField(15);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(5, 5, 5, 10); // Margens
+        painel.add(senhaInput, gbc);
+    
+        JButton botaoCadastrar = new JButton("Cadastrar");
+        gbc.gridx = 1;
+        gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(20, 10, 0, 0); // Margens
+        gbc.insets = new Insets(20, 5, 0, 10); // Margens
+        painel.add(botaoCadastrar, gbc);
+    
+        JButton botaoVoltar = new JButton("Voltar");
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(20, 10, 0, 5); // Margens
         painel.add(botaoVoltar, gbc);
-
+    
         botaoCadastrar.addActionListener(e -> {
             String cpf = cpfInput.getText();
             String nome = nomeInput.getText();
-
+            String email = emailInput.getText();
+            String senha = new String(senhaInput.getPassword());
+    
             // Lógica para cadastrar supervisor
-            // Exemplo: supervisorService.cadastrarSupervisor(cpf, nome);
-            mostrarMensagem("Supervisor cadastrado com sucesso!", "Cadastro de Supervisor", JOptionPane.INFORMATION_MESSAGE);
+            // Exemplo: supervisorService.cadastrarSupervisor(cpf, nome, email, senha);
+            JOptionPane.showMessageDialog(null, "Supervisor cadastrado com sucesso!", "Cadastro de Supervisor", JOptionPane.INFORMATION_MESSAGE);
         });
-
+    
         botaoVoltar.addActionListener(e -> {
             telaCadastroSupervisor.dispose(); // Fecha a janela de cadastro de supervisor ao clicar em voltar
         });
-
+    
         telaCadastroSupervisor.add(painel);
         telaCadastroSupervisor.setVisible(true);
     }
+    
 
     private void mostrarTelaPrincipalAluno() {
         JFrame telaPrincipal = new JFrame("Painel do Aluno");
