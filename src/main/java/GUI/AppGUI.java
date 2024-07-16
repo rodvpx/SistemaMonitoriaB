@@ -7,7 +7,7 @@ public class AppGUI extends JFrame {
 
     public AppGUI() {
         setTitle("Sistema de Monitoria");
-        setSize(1366, 768);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
