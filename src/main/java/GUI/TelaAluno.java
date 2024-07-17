@@ -101,9 +101,7 @@ public class TelaAluno {
             mostrarMensagem("Solicitar monitoria", "Solicitar Monitoria", JOptionPane.INFORMATION_MESSAGE);
         });
 
-        botaoVoltar.addActionListener(e -> {
-            screenManager.showScreen(new TelaInicial(screenManager).criarPainelInicial());
-        });
+        botaoVoltar.addActionListener(e -> { screenManager.showScreen(new TelaInicial(screenManager));});
 
 //        telaPrincipal.add(painel);
 //        telaPrincipal.setVisible(true);

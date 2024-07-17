@@ -15,7 +15,7 @@ public class AppGUI extends JFrame {
 
         // Mostrar a tela inicial
         TelaInicial telaInicial = new TelaInicial(screenManager);
-        screenManager.showScreen(telaInicial.criarPainelInicial());
+        screenManager.showScreen(telaInicial);
 
         setVisible(true);
     }

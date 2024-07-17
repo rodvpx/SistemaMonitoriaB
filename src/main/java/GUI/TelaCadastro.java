@@ -57,7 +57,7 @@ public class TelaCadastro {
             screenManager.showScreen(new TelaCadastroSupervisor(screenManager).criarPainelCadastroSupervisor());
         });
 
-        botaoVoltar.addActionListener(e -> { screenManager.showScreen(new TelaInicial(screenManager).criarPainelInicial());
+        botaoVoltar.addActionListener(e -> { screenManager.showScreen(new TelaInicial(screenManager));
         });
 
        return painel;

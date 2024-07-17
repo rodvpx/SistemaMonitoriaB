@@ -87,9 +87,7 @@ public class TelaLogin {
             }
         });
 
-        botaoVoltar.addActionListener(e -> {
-            screenManager.showScreen(new TelaInicial(screenManager).criarPainelInicial()); // Fecha a janela de login ao clicar em voltar
-        });
+        botaoVoltar.addActionListener(e -> { screenManager.showScreen(new TelaInicial(screenManager));});
 
         return painel;
     }
