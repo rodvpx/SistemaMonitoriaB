@@ -55,7 +55,7 @@ public class TelaInicial extends BasePanel {
         add(botaoSair, gbc);
 
         // Adiciona ações aos botões
-        botaoLogin.addActionListener(e -> screenManager.showScreen(new TelaLogin(screenManager).criarPainelLogin()));
+        botaoLogin.addActionListener(e -> { screenManager.showScreen(new TelaLogin(screenManager));});
         botaoCadastro.addActionListener(e -> screenManager.showScreen(new TelaCadastro(screenManager).criarPainelCadastro()));
         botaoSair.addActionListener(e -> System.exit(0));
 

@@ -1,6 +1,8 @@
 package GUI;
 
 import DTO.Aluno;
+import DTO.Supervisor;
+import DTO.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,78 +10,108 @@ import java.sql.SQLException;
 
 import static GUI.AppGUI.mostrarMensagem;
 
-public class TelaLogin {
-
+public class TelaLogin extends BasePanel {
     private ScreenManager screenManager;
     private static Aluno alunoLogado; // Para armazenar o aluno logado
 
     public TelaLogin(ScreenManager screenManager) {
+        super();
         this.screenManager = screenManager;
+        setLayout(new GridBagLayout());
+        criarPainelLogin();
     }
 
-    public JPanel criarPainelLogin() {
-        JPanel painel = new JPanel(new GridBagLayout());
+    public void criarPainelLogin() {
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JLabel emailLabel = new JLabel("Email:");
+        ImageIcon originalIcon = new ImageIcon("Img/user-286.png");
+        Image originalImage = originalIcon.getImage();
+        Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        JLabel userLabel = new JLabel(scaledIcon);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.LINE_END;
-        gbc.insets = new Insets(10, 10, 5, 5); // Margens
-        painel.add(emailLabel, gbc);
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.NORTH;
+        add(userLabel, gbc);
+
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1; // Resetar a largura da coluna
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.LINE_END;// Ancorar à direita
+        gbc.insets = new Insets(0,5,5,0);
+        add(emailLabel, gbc);
 
         JTextField emailInput = new JTextField(15);
+        emailInput.setFont(new Font("Arial", Font.PLAIN, 20));
+        emailInput.setPreferredSize(new Dimension(200, 30));
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.insets = new Insets(10, 5, 5, 10); // Margens
-        painel.add(emailInput, gbc);
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(0,-30,5,0);// Ancorar à esquerda
+        add(emailInput, gbc);
 
         JLabel senhaLabel = new JLabel("Senha:");
+        senhaLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.LINE_END;
-        gbc.insets = new Insets(5, 10, 10, 5); // Margens
-        painel.add(senhaLabel, gbc);
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(0,5,5,0);
+        add(senhaLabel, gbc);
 
         JPasswordField senhaInput = new JPasswordField(15);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.insets = new Insets(5, 5, 10, 10); // Margens
-        painel.add(senhaInput, gbc);
-
-        JButton botaoLogin = new JButton("Login");
+        senhaInput.setFont(new Font("Arial", Font.PLAIN, 20));
+        senhaInput.setPreferredSize(new Dimension(200, 30));
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10, 0, 0, 0); // Margens
-        painel.add(botaoLogin, gbc);
+        gbc.fill = GridBagConstraints.LINE_START;//
+        gbc.insets = new Insets(0,-30,5,0);
+        add(senhaInput, gbc);
 
-        JButton botaoVoltar = new JButton("Voltar");
+        StyleButton botaoLogin = new StyleButton("Login");
+        botaoLogin.setFont(new Font("Arial", Font.PLAIN, 20));
+        botaoLogin.setPreferredSize(new Dimension(150, 40));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10,0,0,0);
+        add(botaoLogin, gbc);
+
+        StyleButton botaoVoltar = new StyleButton("Voltar");
+        botaoVoltar.setFont(new Font("Arial", Font.PLAIN, 20));
+        botaoVoltar.setPreferredSize(new Dimension(150, 40));
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10, 10, 0, 0); // Margens
-        painel.add(botaoVoltar, gbc);
+        gbc.insets = new Insets(10,0,0,0);
+        add(botaoVoltar, gbc);
 
         botaoLogin.addActionListener(e -> {
             String email = emailInput.getText();
             String senha = new String(senhaInput.getPassword());
 
-            Aluno aluno = new Aluno(null, null, email, senha);
+            Usuario user = new Aluno(null, null, email, senha);
 
             try {
-                String resultadoLogin = aluno.login(email, senha);
+                String tipoUser = user.login(email, senha);
 
-                // Verifica o resultado do login
-                if ("sucesso".equals(resultadoLogin)) {
-                    alunoLogado = aluno; // Armazena o aluno logado
-                    screenManager.showScreen(new TelaAluno(screenManager).criarPainelALuno()); // Mostra a tela principal do aluno
-                } else if ("falha".equals(resultadoLogin)) {
-                    mostrarMensagem("Falha no login. Verifique suas credenciais.", "Login", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    mostrarMensagem("Erro desconhecido ao tentar realizar o login.", "Erro", JOptionPane.ERROR_MESSAGE);
+                if (tipoUser != null){
+                    mostrarMensagem("Login realizado com sucesso", "Login", 0 );
+
+                    if("S".equals(tipoUser)){
+                        Supervisor supervisor = new Supervisor(null, null, email, senha);
+                        screenManager.showScreen(new TelaSupervisor(screenManager));
+                    }else{
+                        Aluno aluno = new Aluno(null, null, email, senha);
+                        screenManager.showScreen(new TelaAluno(screenManager));
+                    }
+                }else{
+                    mostrarMensagem("Falha no login", "Erro:", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -87,8 +119,8 @@ public class TelaLogin {
             }
         });
 
-        botaoVoltar.addActionListener(e -> { screenManager.showScreen(new TelaInicial(screenManager));});
-
-        return painel;
+        botaoVoltar.addActionListener(e -> {
+            screenManager.showScreen(new TelaInicial(screenManager));
+        });
     }
 }

@@ -5,12 +5,15 @@ import java.awt.*;
 
 import static GUI.AppGUI.mostrarMensagem;
 
-public class TelaAluno {
+public class TelaAluno extends BasePanel{
 
     private ScreenManager screenManager;
 
     public TelaAluno(ScreenManager screenManager) {
+        super();
         this.screenManager = screenManager;
+        setLayout(new GridBagLayout());
+        criarPainelALuno();
     }
 
     public JPanel criarPainelALuno() {

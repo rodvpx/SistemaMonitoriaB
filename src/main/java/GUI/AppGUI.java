@@ -17,6 +17,7 @@ public class AppGUI extends JFrame {
         TelaInicial telaInicial = new TelaInicial(screenManager);
         screenManager.showScreen(telaInicial);
 
+
         setVisible(true);
     }
 
