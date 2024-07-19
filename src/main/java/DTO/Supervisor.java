@@ -28,7 +28,6 @@ public class Supervisor extends Usuario {
     }
 
 
-
     public boolean promoverAlunoParaMonitor(Aluno aluno) {
         String sql = "UPDATE usuario SET tipo = 'M' WHERE email = ?";
         try (Connection conn = getConexao();
@@ -44,18 +43,33 @@ public class Supervisor extends Usuario {
         return false;
     }
 
-    // Métodos específicos de Supervisor
 
     public void excluirMonitor(Monitor monitor) {
         // Implementação do método
     }
 
-    public void adicionarDisciplina(Monitor disciplina) {
-        // Implementação do método
+    public void adicionarDisciplina(String cod, String nome) throws SQLException {
+        String sql = "insert into disciplina values(?,?,?)";
+        try (Connection conn = getConexao();) {
+            PreparedStatement sta = conn.prepareStatement(sql);
+            sta.setString(1, nome);
+            sta.setString(2, cod);
+            sta.setString(3, "*");
+            sta.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void excluirDisciplina(Monitor disciplina) {
-        // Implementação do método
+    public void excluirDisciplina(String cod) throws SQLException {
+        String sql = "delete from disciplina where codigo = ?";
+        try (Connection conn = getConexao();) {
+            PreparedStatement sta = conn.prepareStatement(sql);
+            sta.setString(1, cod);
+            sta.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void designarMonitor(Monitor monitor, Monitor disciplina) {

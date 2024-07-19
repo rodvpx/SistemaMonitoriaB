@@ -42,7 +42,7 @@ public class TelaLogin extends BasePanel {
         gbc.gridwidth = 1; // Resetar a largura da coluna
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.LINE_END;// Ancorar à direita
-        gbc.insets = new Insets(0,5,5,0);
+        gbc.insets = new Insets(0, 5, 5, 0);
         add(emailLabel, gbc);
 
         JTextField emailInput = new JTextField(15);
@@ -51,7 +51,7 @@ public class TelaLogin extends BasePanel {
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.LINE_START;
-        gbc.insets = new Insets(0,-30,5,0);// Ancorar à esquerda
+        gbc.insets = new Insets(0, -30, 5, 0);// Ancorar à esquerda
         add(emailInput, gbc);
 
         JLabel senhaLabel = new JLabel("Senha:");
@@ -60,7 +60,7 @@ public class TelaLogin extends BasePanel {
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.LINE_END;
-        gbc.insets = new Insets(0,5,5,0);
+        gbc.insets = new Insets(0, 5, 5, 0);
         add(senhaLabel, gbc);
 
         JPasswordField senhaInput = new JPasswordField(15);
@@ -70,7 +70,7 @@ public class TelaLogin extends BasePanel {
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.LINE_START;//
-        gbc.insets = new Insets(0,-30,5,0);
+        gbc.insets = new Insets(0, -30, 5, 0);
         add(senhaInput, gbc);
 
         StyleButton botaoLogin = new StyleButton("Login");
@@ -79,7 +79,7 @@ public class TelaLogin extends BasePanel {
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10,0,0,0);
+        gbc.insets = new Insets(10, 0, 0, 0);
         add(botaoLogin, gbc);
 
         StyleButton botaoVoltar = new StyleButton("Voltar");
@@ -88,7 +88,7 @@ public class TelaLogin extends BasePanel {
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10,0,0,0);
+        gbc.insets = new Insets(10, 0, 0, 0);
         add(botaoVoltar, gbc);
 
         botaoLogin.addActionListener(e -> {
@@ -98,19 +98,17 @@ public class TelaLogin extends BasePanel {
             Usuario user = new Aluno(null, null, email, senha);
 
             try {
-                String tipoUser = user.login(email, senha);
+                Supervisor supervisor = user.login(email, senha);
 
-                if (tipoUser != null){
-                    mostrarMensagem("Login realizado com sucesso", "Login", 0 );
+                if (supervisor != null) {
 
-                    if("S".equals(tipoUser)){
-                        Supervisor supervisor = new Supervisor(null, null, email, senha);
-                        screenManager.showScreen(new TelaSupervisor(screenManager));
-                    }else{
+                    if ("S".equals(supervisor.getTipo())) { // Assumindo que há um método getTipo() no Supervisor
+                        screenManager.showScreen(new TelaSupervisor(screenManager, supervisor));
+                    } else {
                         Aluno aluno = new Aluno(null, null, email, senha);
                         screenManager.showScreen(new TelaAluno(screenManager));
                     }
-                }else{
+                } else {
                     mostrarMensagem("Falha no login", "Erro:", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {

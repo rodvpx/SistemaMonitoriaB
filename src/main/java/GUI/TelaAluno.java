@@ -16,13 +16,7 @@ public class TelaAluno extends BasePanel{
         criarPainelALuno();
     }
 
-    public JPanel criarPainelALuno() {
-//        JFrame telaPrincipal = new JFrame("Painel do Aluno");
-//        telaPrincipal.setSize(600, 400);
-//        telaPrincipal.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//        telaPrincipal.setLocationRelativeTo(null);
-
-        JPanel painel = new JPanel(new GridBagLayout());
+    public void criarPainelALuno() {
         GridBagConstraints gbc = new GridBagConstraints();
 
         JLabel tituloLabel = new JLabel("PAINEL DO ALUNO");
@@ -32,7 +26,7 @@ public class TelaAluno extends BasePanel{
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 10, 20, 10); // Margens
-        painel.add(tituloLabel, gbc);
+        add(tituloLabel, gbc);
 
         JButton botaoHorarios = new JButton("Horários");
         gbc.gridx = 0;
@@ -40,28 +34,28 @@ public class TelaAluno extends BasePanel{
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 10, 10, 5); // Margens
-        painel.add(botaoHorarios, gbc);
+        add(botaoHorarios, gbc);
 
         JButton botaoMonitores = new JButton("Monitores");
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 5, 10, 10); // Margens
-        painel.add(botaoMonitores, gbc);
+        add(botaoMonitores, gbc);
 
         JButton botaoDisciplinas = new JButton("Disciplinas");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 10, 10, 5); // Margens
-        painel.add(botaoDisciplinas, gbc);
+        add(botaoDisciplinas, gbc);
 
         JButton botaoMonitorias = new JButton("Monitorias");
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 5, 10, 10); // Margens
-        painel.add(botaoMonitorias, gbc);
+        add(botaoMonitorias, gbc);
 
         JButton botaoSolicitarMonitoria = new JButton("Solicitar Monitoria");
         gbc.gridx = 0;
@@ -69,7 +63,7 @@ public class TelaAluno extends BasePanel{
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 0, 10); // Margens
-        painel.add(botaoSolicitarMonitoria, gbc);
+        add(botaoSolicitarMonitoria, gbc);
 
         JButton botaoVoltar = new JButton("Sair");
         gbc.gridx = 0;
@@ -77,7 +71,7 @@ public class TelaAluno extends BasePanel{
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10); // Margens
-        painel.add(botaoVoltar, gbc);
+        add(botaoVoltar, gbc);
 
         botaoHorarios.addActionListener(e -> {
             // Implemente a lógica para mostrar os horários do aluno
@@ -106,8 +100,5 @@ public class TelaAluno extends BasePanel{
 
         botaoVoltar.addActionListener(e -> { screenManager.showScreen(new TelaInicial(screenManager));});
 
-//        telaPrincipal.add(painel);
-//        telaPrincipal.setVisible(true);
-        return painel;
     }
 }

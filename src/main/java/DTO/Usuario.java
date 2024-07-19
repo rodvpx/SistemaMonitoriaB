@@ -48,7 +48,7 @@ public abstract class Usuario {
         return false;
     }
 
-    public String login(String email, String senha) throws SQLException {
+    public Supervisor login(String email, String senha) throws SQLException {
         String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
@@ -57,12 +57,18 @@ public abstract class Usuario {
             ResultSet rs = sta.executeQuery();
             if (rs.next()) {
                 System.out.println("Usuário validado com sucesso.");
-                return rs.getString("tipo");
+                String matricula = rs.getString("matricula");
+                String nome = rs.getString("nome");
+                String tipo = rs.getString("tipo");
+                if("S".equals(tipo)) {
+                    return new Supervisor(matricula, nome, email, senha);
+                }
             } else {
                 System.out.println("Usuário não encontrado ou senha incorreta.");
                 return null;
             }
         }
+        return null;
     }
 
     // Getters e Setters

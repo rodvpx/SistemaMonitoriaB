@@ -2,15 +2,20 @@ package GUI;
 
 import javax.swing.JButton;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class StyleButton extends JButton {
 
     private static final int BORDER_THICKNESS = 3; // Espessura da borda
     private static final int BORDER_RADIUS = 32; // Raio das bordas arredondadas
+    private Color normalColor = Color.WHITE;
+    private Color hoverColor = Color.LIGHT_GRAY;
 
     public StyleButton(String txt) {
         super(txt);
         configurarEstilo();
+        adicionarEfeitosMouse();
     }
 
     private void configurarEstilo() {
@@ -21,6 +26,22 @@ public class StyleButton extends JButton {
         setPreferredSize(new Dimension(150, 50));
         setContentAreaFilled(false);
         setBorderPainted(false);
+    }
+
+    private void adicionarEfeitosMouse() {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setBackground(hoverColor);
+                repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setBackground(normalColor);
+                repaint();
+            }
+        });
     }
 
     @Override
