@@ -76,7 +76,10 @@ public class Supervisor extends Usuario {
         // Implementação do método
     }
 
-    public void ajustarHorarioMonitoria(Monitoria monitoria, Monitoria horario, Monitoria local) {
+    public void ajustarHorarioMonitoria(String local, String capacidade) {
         // Implementação do método
+    }
+
+    public void excluirHorario(String id) {
     }
 }

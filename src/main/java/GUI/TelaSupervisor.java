@@ -1,10 +1,11 @@
 package GUI;
 
 import DTO.Disciplina;
+import DTO.Local;
 import DTO.Supervisor;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -20,6 +21,7 @@ import java.util.List;
 import static DAO.conexao.getConexao;
 
 public class TelaSupervisor extends BasePanel {
+
     private ScreenManager screenManager;
     private Supervisor supervisor;
     private JPanel rightPanel;
@@ -100,7 +102,7 @@ public class TelaSupervisor extends BasePanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    atualizarDisciplinas();
+                    mostrarDisciplina();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -110,7 +112,11 @@ public class TelaSupervisor extends BasePanel {
         horariosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mostrarHorarios();
+                try {
+                    mostrarHorarios();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -150,7 +156,7 @@ public class TelaSupervisor extends BasePanel {
         // Implementar o código para mostrar monitores
     }
 
-    private void atualizarDisciplinas() throws SQLException {
+    private void mostrarDisciplina() throws SQLException {
         // Consultar as disciplinas do banco de dados
         List<Disciplina> disciplinas = new ArrayList<>();
         String sql = "SELECT codigo, nome FROM disciplina";
@@ -185,20 +191,12 @@ public class TelaSupervisor extends BasePanel {
         table.setFont(tableFont);
         table.getTableHeader().setFont(tableFont);
 
-// Centralizar o texto apenas na coluna "Código" e ajustar a largura da coluna
+// Centralizar todas as colunas
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-// Aplicar o renderer apenas na coluna "Código"
-        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-
-// Ajustar a largura da coluna "Código" para se adequar ao conteúdo máximo
-        table.getColumnModel().getColumn(0).setPreferredWidth(5); // Ajuste o valor conforme necessário
-
-// Manter o alinhamento padrão para a coluna "Disciplina"
-        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-        table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
 
 // Criar e configurar o JScrollPane
         JScrollPane scrollPane = new JScrollPane(table);
@@ -211,9 +209,9 @@ public class TelaSupervisor extends BasePanel {
 
         // Adiciona o painel inferior com os botões
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JButton adicionarButton = new JButton("Adicionar Disciplina");
+        StyleButton adicionarButton = new StyleButton("Adicionar Disciplina");
         adicionarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,7 +220,7 @@ public class TelaSupervisor extends BasePanel {
         });
         bottomPanel.add(adicionarButton);
 
-        JButton excluirButton = new JButton("Excluir Disciplina");
+        StyleButton excluirButton = new StyleButton("Excluir Disciplina");
         excluirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -250,7 +248,7 @@ public class TelaSupervisor extends BasePanel {
                 } else {
                     // Adicionar nova disciplina
                     supervisor.adicionarDisciplina(codigo, nome);
-                    atualizarDisciplinas(); // Atualiza a lista após adicionar
+                    mostrarDisciplina(); // Atualiza a lista após adicionar
                 }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao adicionar disciplina: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -283,7 +281,7 @@ public class TelaSupervisor extends BasePanel {
             String codigo = (String) table.getValueAt(selectedRow, 0);
             try {
                 supervisor.excluirDisciplina(codigo);
-                atualizarDisciplinas(); // Atualiza a lista após excluir
+                mostrarDisciplina(); // Atualiza a lista após excluir
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao excluir disciplina: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -292,23 +290,153 @@ public class TelaSupervisor extends BasePanel {
         }
     }
 
-    private void mostrarHorarios() {
-        // Implementar o código para mostrar horários
+    private void mostrarHorarios() throws SQLException {
+
+        List<Local> locais = new ArrayList<>();
+
+        String sql = "SELECT id, sala, capacidade FROM local";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Local local = new Local();
+                local.setId(rs.getInt("id"));
+                local.setSala(rs.getString("sala"));
+                local.setCapacidade(rs.getInt("capacidade"));
+                locais.add(local);
+            }
+        }
+
+        //Criar modelo da tabela
+        String[] columnNames = {"Id", "Sala", "Capacidade"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+        //percorrendo a lista da tabela e adicionando na tabela
+        for (Local local : locais) {
+            Object[] row = {local.getId(), local.getSala(), local.getCapacidade(),};
+            tableModel.addRow(row);
+        }
+
+        JTable table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
+        table.setBorder(BorderFactory.createLineBorder(Color.decode("#3176FB"), 2));
+
+        Font tableFont = new Font("SansSerif", Font.PLAIN, 18);
+        table.setFont(tableFont);
+        table.getTableHeader().setFont(tableFont);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+
+        // Centralizar todas as colunas
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Atualizar o painel direito
+        rightPanel.removeAll();
+        rightPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Adiciona o painel inferior com os botões
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        StyleButton adicionarButton = new StyleButton("Adicionar");
+        adicionarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adicionarNovoLocal();
+            }
+        });
+        bottomPanel.add(adicionarButton);
+
+        StyleButton excluirButton = new StyleButton("Excluir");
+        excluirButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                excluirLocalSelecionada();
+            }
+        });
+        bottomPanel.add(excluirButton);
+
+        rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        rightPanel.revalidate();
+        rightPanel.repaint();
+
     }
 
-//    // Método principal para testes
-//    public static void main(String[] args) {
-//        JFrame frame = new JFrame("Tela do Supervisor");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(800, 600);
-//        frame.setLayout(new BorderLayout());
-//
-//        // Supondo que você tenha um objeto Supervisor
-//        Supervisor supervisor = new Supervisor("12345", "João da Silva", "joao@example.com", "senha123");
-//
-//        TelaSupervisor telaSupervisor = new TelaSupervisor(null, supervisor);
-//        frame.add(telaSupervisor, BorderLayout.CENTER);
-//
-//        frame.setVisible(true);
-//    }
+    private void adicionarNovoLocal() {
+        String sala = JOptionPane.showInputDialog("Digite a nova sala:");
+        String capacidade = JOptionPane.showInputDialog("Digite a capacidade:");
+
+        if (sala != null && capacidade != null && !sala.trim().isEmpty() && !capacidade.trim().isEmpty()) {
+            try {
+                if (verificarSalaExiste(sala)) {
+                    JOptionPane.showMessageDialog(this, "Sala já existente", "Erro", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    supervisor.ajustarHorarioMonitoria(sala, capacidade);
+                    mostrarHorarios();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao adicionar local: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Sala e capacidade não podem estar vazios.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private boolean verificarSalaExiste(String sala) throws SQLException {
+        String sql = "Select count(*) from local where sala = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, sala);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        }
+        return false;
+
+    }
+
+    private void excluirLocalSelecionada() {
+        JTable table = (JTable) ((JScrollPane) rightPanel.getComponent(0)).getViewport().getView();
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow != -1) {
+            String id = (String) table.getValueAt(selectedRow, 0);
+            try {
+                supervisor.excluirHorario(id);
+                mostrarHorarios();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir local: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um local para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+
+    // Método principal para testes
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Tela do Supervisor");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLayout(new BorderLayout());
+
+        // Supondo que você tenha um objeto Supervisor
+        Supervisor supervisor = new Supervisor("12345", "João da Silva", "joao@example.com", "senha123");
+
+        TelaSupervisor telaSupervisor = new TelaSupervisor(null, supervisor);
+        frame.add(telaSupervisor, BorderLayout.CENTER);
+
+        frame.setVisible(true);
+    }
 }
