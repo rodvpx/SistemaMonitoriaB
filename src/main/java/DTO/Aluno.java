@@ -8,10 +8,6 @@ public class Aluno extends Usuario {
         super(matricula, nome, email, senha, "A");
     }
 
-    // Construtor adicional para aceitar tipo
-    public Aluno(String matricula, String nome, String email, String senha, String tipo) {
-        super(matricula, nome, email, senha, tipo);
-    }
 
     // Métodos específicos de Aluno
 

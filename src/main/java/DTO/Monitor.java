@@ -8,9 +8,8 @@ public class Monitor extends Aluno {
     private Horario horario;
     private Local local;
 
-    public Monitor(String matricula, String nome, String email, String senha) {
-        super(matricula, nome, email, senha, "M");
-        //TODO Auto-generated constructor stub
+    public Monitor(String matricula, String nome, String email, String senha, ArrayList<String> disciplina, Local local, Horario horario) {
+        super(matricula, nome, email, senha);
     }
 
     public void definirHorario(Aluno disciplina, Horario horario, Local local) {

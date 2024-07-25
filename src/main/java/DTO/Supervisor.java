@@ -29,11 +29,11 @@ public class Supervisor extends Usuario {
 
 
     public boolean promoverAlunoParaMonitor(Aluno aluno) {
-        String sql = "UPDATE usuario SET tipo = 'M' WHERE email = ?";
+        String sql = "UPDATE usuario SET tipo = 'M' WHERE matricula = ?";
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
 
-            sta.setString(1, aluno.getEmail());
+            sta.setString(1, aluno.getMatricula());
             sta.executeUpdate();
             return true;
 
@@ -44,9 +44,17 @@ public class Supervisor extends Usuario {
     }
 
 
-    public void excluirMonitor(Monitor monitor) {
-        // Implementação do método
+    public void excluirMonitor(String matricula) {
+        String sql = "UPDATE usuario SET tipo = 'A' WHERE matricula = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+            sta.setString(1, matricula);
+            sta.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public void adicionarDisciplina(String cod, String nome) throws SQLException {
         String sql = "insert into disciplina values(?,?,?)";
@@ -80,6 +88,29 @@ public class Supervisor extends Usuario {
         // Implementação do método
     }
 
-    public void excluirHorario(String id) {
+    public void adicionarLocal(String sala, int capacidade) {
+
+        String sql = "insert into local (sala, capacidade) values(?,?)";
+        try (Connection conn = getConexao();) {
+            PreparedStatement sta = conn.prepareStatement(sql);
+            sta.setString(1, sala);
+            sta.setInt(2, capacidade);
+            sta.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void excluirLocal(int id) {
+
+        String sql = "delete from local where id = ?";
+        try (Connection conn = getConexao();) {
+            PreparedStatement sta = conn.prepareStatement(sql);
+            sta.setInt(1, id);
+            sta.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

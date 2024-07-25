@@ -1,8 +1,6 @@
 package GUI;
 
-import DTO.Disciplina;
-import DTO.Local;
-import DTO.Supervisor;
+import DTO.*;
 
 import javax.swing.*;
 
@@ -35,108 +33,39 @@ public class TelaSupervisor extends BasePanel {
     }
 
     public void criarPainelSupervisor() {
-        // Painel esquerdo
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BorderLayout()); // Usar BorderLayout para facilitar o posicionamento
+        leftPanel.setLayout(new BorderLayout());
 
-        // Painel para imagem e nome
         JPanel imageNamePanel = new JPanel();
-        imageNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Ajustar espaçamento
+        imageNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
-        // Adicionando a imagem e nome do supervisor
-        JLabel imageLabel = new JLabel(redimensionarImagem("Img/user-286.png", 60, 60)); // Aumentar tamanho da imagem
+        JLabel imageLabel = new JLabel(redimensionarImagem("Img/user-286.png", 60, 60));
         JLabel nameLabel = new JLabel(supervisor.getNome());
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Aumentar tamanho da fonte
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
         imageNamePanel.add(imageLabel);
         imageNamePanel.add(nameLabel);
 
-        // Adicionando o painel de imagem e nome ao painel esquerdo
         leftPanel.add(imageNamePanel, BorderLayout.NORTH);
 
-        // Painel para os botões
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS)); // BoxLayout para lista vertical
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
-// Adicionando os botões
-        StyleButton monitoriasButton = new StyleButton("Monitorias");
-        StyleButton monitoresButton = new StyleButton("Monitores");
-        StyleButton disciplinasButton = new StyleButton("Disciplinas");
-        StyleButton horariosButton = new StyleButton("Horários");
+        // Create and add buttons
+        String[] buttonLabels = {"Monitorias", "Monitores", "Disciplinas", "Locais", "Horários"};
+        for (String label : buttonLabels) {
+            StyleButton button = new StyleButton(label);
+            button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height));
+            button.addActionListener(createButtonActionListener(label));
+            buttonsPanel.add(button);
+            buttonsPanel.add(Box.createVerticalStrut(10));
+        }
 
-// Configurar o tamanho dos botões para preencher a largura
-        monitoriasButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, monitoriasButton.getPreferredSize().height));
-        monitoresButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, monitoresButton.getPreferredSize().height));
-        disciplinasButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, disciplinasButton.getPreferredSize().height));
-        horariosButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, horariosButton.getPreferredSize().height));
-
-// Adicionando botões ao painel
-        buttonsPanel.add(monitoriasButton);
-        buttonsPanel.add(Box.createVerticalStrut(10)); // Espaçamento entre os botões
-        buttonsPanel.add(monitoresButton);
-        buttonsPanel.add(Box.createVerticalStrut(10)); // Espaçamento entre os botões
-        buttonsPanel.add(disciplinasButton);
-        buttonsPanel.add(Box.createVerticalStrut(10)); // Espaçamento entre os botões
-        buttonsPanel.add(horariosButton);
-
-// Adicionando o painel de botões ao painel esquerdo
         leftPanel.add(buttonsPanel, BorderLayout.CENTER);
 
-
-        // Configurar ação dos botões
-        monitoriasButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mostrarMonitorias();
-            }
-        });
-
-        monitoresButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mostrarMonitores();
-            }
-        });
-
-        disciplinasButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    mostrarDisciplina();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-
-        horariosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    mostrarHorarios();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-
-        // Adicionando componentes ao painel de botões
-        buttonsPanel.add(monitoriasButton);
-        buttonsPanel.add(Box.createVerticalStrut(10)); // Espaçamento
-        buttonsPanel.add(monitoresButton);
-        buttonsPanel.add(Box.createVerticalStrut(10)); // Espaçamento
-        buttonsPanel.add(disciplinasButton);
-        buttonsPanel.add(Box.createVerticalStrut(10)); // Espaçamento
-        buttonsPanel.add(horariosButton);
-
-        // Adicionando o painel de botões ao painel esquerdo
-        leftPanel.add(buttonsPanel, BorderLayout.CENTER);
-
-        // Painel direito
         rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
 
-        // Adicionar o painel direito ao painel principal
         add(leftPanel, BorderLayout.WEST);
         add(rightPanel, BorderLayout.CENTER);
     }
@@ -148,18 +77,265 @@ public class TelaSupervisor extends BasePanel {
         return new ImageIcon(newImage);
     }
 
+    private ActionListener createButtonActionListener(String actionCommand) {
+        return e -> {
+            try {
+                switch (actionCommand) {
+                    case "Monitorias":
+                        mostrarMonitorias();
+                        break;
+                    case "Monitores":
+                        mostrarMonitores();
+                        break;
+                    case "Disciplinas":
+                        mostrarDisciplina();
+                        break;
+                    case "Locais":
+                        mostrarLocal();
+                        break;
+                    case "Horários":
+                        //mostrarHorarios();
+                        break;
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        };
+    }
+
+    private void configureTable(JTable table) {
+        table.setFillsViewportHeight(true);
+        table.setBorder(BorderFactory.createLineBorder(Color.decode("#3176FB"), 2));
+        Font tableFont = new Font("SansSerif", Font.PLAIN, 18);
+        table.setFont(tableFont);
+        table.getTableHeader().setFont(tableFont);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+
+    private void addButton(JPanel panel, String label, ActionListener listener) {
+        StyleButton button = new StyleButton(label);
+        button.addActionListener(listener);
+        panel.add(button);
+    }
+
     private void mostrarMonitorias() {
-        // Implementar o código para mostrar monitorias
+
     }
 
     private void mostrarMonitores() {
-        // Implementar o código para mostrar monitores
+        List<Monitor> monitores = new ArrayList<>();
+        String sql = "SELECT * FROM usuario WHERE tipo = 'M' ORDER BY nome ASC";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql);
+             ResultSet rs = sta.executeQuery()) {
+
+            while (rs.next()) {
+                String matricula = rs.getString("matricula");
+                String nome = rs.getString("nome");
+                String email = rs.getString("email");
+
+                Monitor monitor = new Monitor(matricula, nome, email, null, null, null, null);
+                monitores.add(monitor);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Criar o modelo da tabela
+        String[] columnNames = {"Matrícula", "Nome", "E-mail"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        for (Monitor monitor : monitores) {
+            Object[] row = {monitor.getMatricula(), monitor.getNome(), monitor.getEmail()};
+            tableModel.addRow(row);
+        }
+
+        // Criar e configurar a tabela
+        JTable table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
+        table.setBorder(BorderFactory.createLineBorder(Color.decode("#3176FB"), 2));
+
+        // Configurar a fonte da tabela para 18 pontos
+        Font tableFont = new Font("SansSerif", Font.PLAIN, 18);
+        table.setFont(tableFont);
+        table.getTableHeader().setFont(tableFont);
+
+        // Centralizar todas as colunas
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        // Criar e configurar o JScrollPane
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adiciona algum espaçamento
+
+        // Atualizar o painel direito na EDT
+        SwingUtilities.invokeLater(() -> {
+            rightPanel.removeAll();
+            rightPanel.add(scrollPane, BorderLayout.CENTER);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+
+            // Adiciona o painel inferior com os botões
+            JPanel bottomPanel = new JPanel();
+            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+
+            StyleButton adicionarButton = new StyleButton("Promover Monitor");
+            adicionarButton.setPreferredSize(new Dimension(180, 50));
+            adicionarButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
+            adicionarButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    adicionarNovoMonitor();
+                }
+            });
+            bottomPanel.add(adicionarButton);
+
+            StyleButton excluirButton = new StyleButton("Excluir Monitor");
+            excluirButton.setPreferredSize(new Dimension(180, 50));
+            excluirButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
+            excluirButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    excluirMonitor();
+                }
+            });
+            bottomPanel.add(excluirButton);
+
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
     }
 
+    private void excluirMonitor() {
+        JTable table = (JTable) ((JScrollPane) rightPanel.getComponent(0)).getViewport().getView();
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow != -1) {
+            String matricula = (String) table.getValueAt(selectedRow, 0);
+            supervisor.excluirMonitor(matricula);
+            mostrarMonitores(); // Atualiza a lista após excluir
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um monitor para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void adicionarNovoMonitor() {
+        List<Aluno> alunos = new ArrayList<>();
+        String sql = "SELECT * FROM usuario WHERE tipo = 'A' ORDER BY nome ASC";
+
+        // Consultar os usuários do tipo 'A' do banco de dados
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql);
+             ResultSet rs = sta.executeQuery()) {
+
+            while (rs.next()) {
+                String matricula = rs.getString("matricula");
+                String nome = rs.getString("nome");
+                String email = rs.getString("email");
+                Aluno aluno = new Aluno(matricula, nome, email, null);
+                alunos.add(aluno);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Criar o modelo da tabela
+        String[] columnNames = {"Matrícula", "Nome", "E-mail"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        for (Aluno aluno : alunos) {
+            Object[] row = {aluno.getMatricula(), aluno.getNome(), aluno.getEmail()};
+            tableModel.addRow(row);
+        }
+
+        // Criar e configurar a tabela
+        JTable table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
+        table.setBorder(BorderFactory.createLineBorder(Color.decode("#3176FB"), 2));
+
+        // Configurar a fonte da tabela para 18 pontos
+        Font tableFont = new Font("SansSerif", Font.PLAIN, 18);
+        table.setFont(tableFont);
+        table.getTableHeader().setFont(tableFont);
+
+        // Centralizar todas as colunas
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        // Criar e configurar o JScrollPane
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adiciona algum espaçamento
+
+        // Criar um botão para promover o aluno selecionado
+        StyleButton promoverButton = new StyleButton("Promover para Monitor");
+        promoverButton.setPreferredSize(new Dimension(200, 50));
+        promoverButton.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        promoverButton.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                String matricula = (String) table.getValueAt(selectedRow, 0);
+                Aluno alunoSelecionado = alunos.stream().filter(a -> a.getMatricula().equals(matricula)).findFirst().orElse(null);
+                if (alunoSelecionado != null) {
+                    supervisor.promoverAlunoParaMonitor(alunoSelecionado);
+                    JOptionPane.showMessageDialog(null, "Aluno promovido a Monitor com sucesso!");
+                    // Atualizar a tabela removendo o aluno promovido
+                    tableModel.removeRow(selectedRow);
+                }
+            }
+        });
+
+        // Criar um botão para voltar
+        StyleButton voltarButton = new StyleButton("Voltar");
+        voltarButton.setPreferredSize(new Dimension(180, 50));
+        voltarButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
+        voltarButton.addActionListener(e -> {
+            // Lógica para voltar à tela anterior
+            // Exemplo: rightPanel.removeAll();
+            rightPanel.removeAll();
+            mostrarMonitores(); // Chamar o método para mostrar monitores
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
+
+
+        // Criar um painel para os botões
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(promoverButton);
+        buttonPanel.add(voltarButton);
+
+        // Atualizar o painel direito na EDT
+        SwingUtilities.invokeLater(() -> {
+            rightPanel.removeAll();
+            rightPanel.setLayout(new BorderLayout());
+            rightPanel.add(scrollPane, BorderLayout.CENTER);
+            rightPanel.add(buttonPanel, BorderLayout.SOUTH);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
+    }
+
+
+    // METODOS DISCIPLINA
     private void mostrarDisciplina() throws SQLException {
         // Consultar as disciplinas do banco de dados
         List<Disciplina> disciplinas = new ArrayList<>();
-        String sql = "SELECT codigo, nome FROM disciplina";
+        String sql = "SELECT codigo, nome FROM disciplina ORDER BY nome ASC";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -212,6 +388,9 @@ public class TelaSupervisor extends BasePanel {
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         StyleButton adicionarButton = new StyleButton("Adicionar Disciplina");
+        adicionarButton.setPreferredSize(new Dimension(180, 50));
+        adicionarButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
+
         adicionarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -221,6 +400,8 @@ public class TelaSupervisor extends BasePanel {
         bottomPanel.add(adicionarButton);
 
         StyleButton excluirButton = new StyleButton("Excluir Disciplina");
+        excluirButton.setPreferredSize(new Dimension(180, 50));
+        excluirButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
         excluirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -272,7 +453,6 @@ public class TelaSupervisor extends BasePanel {
         return false; // Retorna false se o código não existir
     }
 
-
     private void excluirDisciplinaSelecionada() {
         // Implementar o código para excluir uma disciplina selecionada
         JTable table = (JTable) ((JScrollPane) rightPanel.getComponent(0)).getViewport().getView();
@@ -290,11 +470,13 @@ public class TelaSupervisor extends BasePanel {
         }
     }
 
-    private void mostrarHorarios() throws SQLException {
+
+    // METODOS LOCAL
+    private void mostrarLocal() throws SQLException {
 
         List<Local> locais = new ArrayList<>();
 
-        String sql = "SELECT id, sala, capacidade FROM local";
+        String sql = "SELECT id, sala, capacidade FROM local order by sala asc ";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -346,7 +528,9 @@ public class TelaSupervisor extends BasePanel {
         // Adiciona o painel inferior com os botões
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        StyleButton adicionarButton = new StyleButton("Adicionar");
+        StyleButton adicionarButton = new StyleButton("Adicionar Local");
+        adicionarButton.setPreferredSize(new Dimension(180, 50));
+        adicionarButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
         adicionarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -355,7 +539,9 @@ public class TelaSupervisor extends BasePanel {
         });
         bottomPanel.add(adicionarButton);
 
-        StyleButton excluirButton = new StyleButton("Excluir");
+        StyleButton excluirButton = new StyleButton("Excluir Local");
+        excluirButton.setPreferredSize(new Dimension(180, 50));
+        excluirButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
         excluirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -372,16 +558,18 @@ public class TelaSupervisor extends BasePanel {
     }
 
     private void adicionarNovoLocal() {
-        String sala = JOptionPane.showInputDialog("Digite a nova sala:");
+
+        String sala = JOptionPane.showInputDialog("Digite a sala:");
         String capacidade = JOptionPane.showInputDialog("Digite a capacidade:");
 
         if (sala != null && capacidade != null && !sala.trim().isEmpty() && !capacidade.trim().isEmpty()) {
             try {
-                if (verificarSalaExiste(sala)) {
+                if (verificarLocalExiste(sala)) {
                     JOptionPane.showMessageDialog(this, "Sala já existente", "Erro", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    supervisor.ajustarHorarioMonitoria(sala, capacidade);
-                    mostrarHorarios();
+                    int cap = Integer.parseInt(capacidade);
+                    supervisor.adicionarLocal(sala, cap);
+                    mostrarLocal();
                 }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao adicionar local: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -392,7 +580,7 @@ public class TelaSupervisor extends BasePanel {
         }
     }
 
-    private boolean verificarSalaExiste(String sala) throws SQLException {
+    private boolean verificarLocalExiste(String sala) throws SQLException {
         String sql = "Select count(*) from local where sala = ?";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -411,10 +599,11 @@ public class TelaSupervisor extends BasePanel {
         JTable table = (JTable) ((JScrollPane) rightPanel.getComponent(0)).getViewport().getView();
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
-            String id = (String) table.getValueAt(selectedRow, 0);
+            Integer localId = (Integer) table.getValueAt(selectedRow, 0);
+
             try {
-                supervisor.excluirHorario(id);
-                mostrarHorarios();
+                supervisor.excluirLocal(localId);
+                mostrarLocal();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao excluir local: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
