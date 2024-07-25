@@ -12,18 +12,19 @@ public class Supervisor extends Usuario {
         super(matricula, nome, email, senha, "S");
     }
 
-    public void criarMonitoria(Disciplina disciplina, Horario horario, Local local) {
-        String matriculaSupervisor = this.getMatricula(); // Supondo que `getMatricula()` retorna a matrícula do supervisor
-        Monitoria monitoria = new Monitoria(disciplina, horario, local, matriculaSupervisor);
-        try {
-            boolean sucesso = monitoria.salvarMonitoria();
-            if (sucesso) {
-                System.out.println("Monitoria criada com sucesso!");
-            } else {
-                System.out.println("Erro ao criar monitoria.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Erro ao criar monitoria: " + e.getMessage());
+    public void criarMonitoria(Disciplina disciplina, Horario horario, Local local,int idMonitor, int idSupervisor) throws SQLException {
+        String sql = "insert into monitoria values (?,?,?,?,?)";
+        try (Connection conexao = getConexao();){
+            PreparedStatement sta = conexao.prepareStatement(sql);
+            sta.setString(1, disciplina.getCodigo());
+            sta.setInt(2, horario.getId());
+            sta.setInt(3, local.getId());
+            sta.setInt(4, idMonitor);
+            sta.setInt(5, idSupervisor);
+            sta.executeUpdate();
+
+        }catch (SQLException e){
+            e.printStackTrace();
         }
     }
 

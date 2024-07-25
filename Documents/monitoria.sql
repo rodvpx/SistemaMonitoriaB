@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 10/07/2024 às 01:42
+-- Tempo de geração: 26/07/2024 às 00:14
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -28,9 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `disciplina` (
-  `id` int(11) NOT NULL,
   `nome` varchar(50) NOT NULL,
-  `codigo` varchar(10) NOT NULL,
+  `codigo` int(11) NOT NULL,
   `monitor` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -38,9 +37,13 @@ CREATE TABLE `disciplina` (
 -- Despejando dados para a tabela `disciplina`
 --
 
-INSERT INTO `disciplina` (`id`, `nome`, `codigo`, `monitor`) VALUES
-(1, 'Programação I', '001', '*'),
-(2, 'Programação II', '002', '*');
+INSERT INTO `disciplina` (`nome`, `codigo`, `monitor`) VALUES
+('Programação I', 1, '*'),
+('Programação II', 2, '*'),
+('Matemática Discreta', 3, '*'),
+('Banco de Dados I', 4, '*'),
+('Logica', 5, '*'),
+('Estrutura De Dados I', 10, '*');
 
 -- --------------------------------------------------------
 
@@ -51,8 +54,15 @@ INSERT INTO `disciplina` (`id`, `nome`, `codigo`, `monitor`) VALUES
 CREATE TABLE `horario` (
   `id` int(11) NOT NULL,
   `dia_semana` varchar(10) NOT NULL,
-  `periodo` varchar(10) NOT NULL
+  `horas` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Despejando dados para a tabela `horario`
+--
+
+INSERT INTO `horario` (`id`, `dia_semana`, `horas`) VALUES
+(1, 'segunda', '15:00');
 
 -- --------------------------------------------------------
 
@@ -75,16 +85,19 @@ CREATE TABLE `inscricao_monitoria` (
 CREATE TABLE `local` (
   `id` int(11) NOT NULL,
   `sala` varchar(20) NOT NULL,
-  `capacidade` int(11) NOT NULL
+  `capacidade` int(11) NOT NULL,
+  `inscritos` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Despejando dados para a tabela `local`
 --
 
-INSERT INTO `local` (`id`, `sala`, `capacidade`) VALUES
-(1, 'Lab 1', 30),
-(2, 'Lab 2', 25);
+INSERT INTO `local` (`id`, `sala`, `capacidade`, `inscritos`) VALUES
+(1, 'Lab 1', 30, 0),
+(2, 'Lab 2', 25, 0),
+(4, 'Lab 8', 30, 0),
+(5, 'Lab 5', 27, 0);
 
 -- --------------------------------------------------------
 
@@ -99,6 +112,13 @@ CREATE TABLE `monitor` (
   `local` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Despejando dados para a tabela `monitor`
+--
+
+INSERT INTO `monitor` (`id`, `disciplina`, `horario`, `local`) VALUES
+(1, 'Programação I', '', '');
+
 -- --------------------------------------------------------
 
 --
@@ -107,12 +127,19 @@ CREATE TABLE `monitor` (
 
 CREATE TABLE `monitoria` (
   `id` int(11) NOT NULL,
-  `disciplina` varchar(100) NOT NULL,
-  `horario` date NOT NULL,
-  `local` varchar(20) NOT NULL,
-  `aluno` varchar(50) DEFAULT NULL,
-  `codigo_supervisor` varchar(50) NOT NULL
+  `disciplina` int(11) DEFAULT NULL,
+  `horario` int(11) DEFAULT NULL,
+  `local` int(11) DEFAULT NULL,
+  `id_monitor` int(11) NOT NULL,
+  `id_supervisor` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Despejando dados para a tabela `monitoria`
+--
+
+INSERT INTO `monitoria` (`id`, `disciplina`, `horario`, `local`, `id_monitor`, `id_supervisor`) VALUES
+(4, 1, 1, 2, 3, 89);
 
 -- --------------------------------------------------------
 
@@ -135,11 +162,11 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALUES
 (1, 'admin', 'admin', 'adminmonitoria', 'admin', NULL),
-(2, 'Fernando Silva', 'fernando.silva123@gmail.com', 'senha123', '1234567890', 'A'),
-(3, 'Amanda Santos', 'amanda.santos456@hotmail.com', 'senha456', '0987654321', 'A'),
+(2, 'Fernando Silva', 'fernando.silva123@gmail.com', 'senha123', '1234567890', 'M'),
+(3, 'Amanda Santos', 'amanda.santos456@hotmail.com', 'senha456', '0987654321', 'M'),
 (4, 'Pedro Oliveira', 'pedro.oliveira789@gmail.com', 'senha789', '1357924680', 'A'),
 (5, 'Ana Souza', 'ana.souza123@hotmail.com', 'senhaabc', '2468013579', 'A'),
-(6, 'Carlos Pereira', 'carlos.pereira456@gmail.com', 'senhaxyz', '9876543210', 'A'),
+(6, 'Carlos Pereira', 'carlos.pereira456@gmail.com', 'senhaxyz', '9876543210', 'M'),
 (7, 'Mariana Lima', 'mariana.lima789@hotmail.com', 'senha456', '3579136280', 'A'),
 (8, 'Ant?nio Santos', 'antonio.santos123@gmail.com', 'senha789', '7654321098', 'A'),
 (9, 'Rafaela Oliveira', 'rafaela.oliveira456@hotmail.com', 'senhaxyz', '1592648703', 'A'),
@@ -154,8 +181,8 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALU
 (18, 'Carolina Almeida', 'carolina.almeida789@gmail.com', 'senha789', '5923078164', 'A'),
 (19, 'Andr? Santos', 'andre.santos123@hotmail.com', 'senhaxyz', '0628620899', 'A'),
 (20, 'Vanessa Lima', 'vanessa.lima456@gmail.com', 'senhaabc', '8628034825', 'A'),
-(21, 'Marcelo Oliveira', 'marcelo.oliveira789@hotmail.com', 'senha123', '3482534211', 'A'),
-(22, 'Aline Souza', 'aline.souza123@gmail.com', 'senha456', '7067982148', 'A'),
+(21, 'Marcelo Oliveira', 'marcelo.oliveira789@hotmail.com', 'senha123', '3482534211', 'M'),
+(22, 'Aline Souza', 'aline.souza123@gmail.com', 'senha456', '7067982148', 'M'),
 (23, 'Guilherme Pereira', 'guilherme.pereira789@hotmail.com', 'senha789', '1134754543', 'A'),
 (24, 'Roberta Santos', 'roberta.santos456@gmail.com', 'senhaxyz', '0263605611', 'A'),
 (25, 'Jos? Lima', 'jose.lima789@hotmail.com', 'senhaabc', '7465754577', 'A'),
@@ -232,7 +259,7 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALU
 -- Índices de tabela `disciplina`
 --
 ALTER TABLE `disciplina`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`codigo`);
 
 --
 -- Índices de tabela `horario`
@@ -245,8 +272,8 @@ ALTER TABLE `horario`
 --
 ALTER TABLE `inscricao_monitoria`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_monitoria` (`id_monitoria`),
-  ADD KEY `id_aluno` (`id_aluno`);
+  ADD UNIQUE KEY `id_monitoria` (`id_monitoria`,`id_aluno`),
+  ADD KEY `fk_aluno` (`id_aluno`);
 
 --
 -- Índices de tabela `local`
@@ -265,7 +292,11 @@ ALTER TABLE `monitor`
 --
 ALTER TABLE `monitoria`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `codigo_supervisor` (`codigo_supervisor`);
+  ADD KEY `fk_monitor` (`id_monitor`),
+  ADD KEY `fk_supervisor` (`id_supervisor`),
+  ADD KEY `fk_disciplina` (`disciplina`),
+  ADD KEY `fk_horario` (`horario`),
+  ADD KEY `fk_local` (`local`);
 
 --
 -- Índices de tabela `usuario`
@@ -281,16 +312,10 @@ ALTER TABLE `usuario`
 --
 
 --
--- AUTO_INCREMENT de tabela `disciplina`
---
-ALTER TABLE `disciplina`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT de tabela `horario`
 --
 ALTER TABLE `horario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `inscricao_monitoria`
@@ -302,19 +327,19 @@ ALTER TABLE `inscricao_monitoria`
 -- AUTO_INCREMENT de tabela `local`
 --
 ALTER TABLE `local`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `monitor`
 --
 ALTER TABLE `monitor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `monitoria`
 --
 ALTER TABLE `monitoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
@@ -330,6 +355,8 @@ ALTER TABLE `usuario`
 -- Restrições para tabelas `inscricao_monitoria`
 --
 ALTER TABLE `inscricao_monitoria`
+  ADD CONSTRAINT `fk_aluno` FOREIGN KEY (`id_aluno`) REFERENCES `usuario` (`id`),
+  ADD CONSTRAINT `fk_monitoria` FOREIGN KEY (`id_monitoria`) REFERENCES `monitoria` (`id`),
   ADD CONSTRAINT `inscricao_monitoria_ibfk_1` FOREIGN KEY (`id_monitoria`) REFERENCES `monitoria` (`id`),
   ADD CONSTRAINT `inscricao_monitoria_ibfk_2` FOREIGN KEY (`id_aluno`) REFERENCES `usuario` (`id`);
 
@@ -337,7 +364,11 @@ ALTER TABLE `inscricao_monitoria`
 -- Restrições para tabelas `monitoria`
 --
 ALTER TABLE `monitoria`
-  ADD CONSTRAINT `monitoria_ibfk_1` FOREIGN KEY (`codigo_supervisor`) REFERENCES `usuario` (`matricula`);
+  ADD CONSTRAINT `fk_disciplina` FOREIGN KEY (`disciplina`) REFERENCES `disciplina` (`codigo`),
+  ADD CONSTRAINT `fk_horario` FOREIGN KEY (`horario`) REFERENCES `horario` (`id`),
+  ADD CONSTRAINT `fk_local` FOREIGN KEY (`local`) REFERENCES `local` (`id`),
+  ADD CONSTRAINT `fk_monitor` FOREIGN KEY (`id_monitor`) REFERENCES `usuario` (`id`),
+  ADD CONSTRAINT `fk_supervisor` FOREIGN KEY (`id_supervisor`) REFERENCES `usuario` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

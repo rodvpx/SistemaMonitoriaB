@@ -6,7 +6,10 @@ public class Horario {
     private String diaSemana;
     private String horas;
 
+    // Construtor com parâmetros
     public Horario(String diaSemana, String horas) {
+        this.diaSemana = diaSemana;
+        this.horas = horas;
     }
 
     public int getId() {
@@ -17,19 +20,19 @@ public class Horario {
         this.id = id;
     }
 
-    public String getDiaSemanda() {
+    public String getDiaSemana() {
         return diaSemana;
     }
 
-    public void setDiaSemanda(String diaSemana) {
+    public void setDiaSemana(String diaSemana) {
         this.diaSemana = diaSemana;
     }
 
-    public String getPeriodo() {
+    public String getHoras() {
         return horas;
     }
 
-    public void setPeriodo(String horas) {
+    public void setHoras(String horas) {
         this.horas = horas;
     }
 }

@@ -9,10 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +49,7 @@ public class TelaSupervisor extends BasePanel {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
         // Create and add buttons
-        String[] buttonLabels = {"Monitorias", "Monitores", "Disciplinas", "Locais", "Horários"};
+        String[] buttonLabels = {"Monitorias", "Monitores", "Disciplinas", "Locais", "Sair"};
         for (String label : buttonLabels) {
             StyleButton button = new StyleButton(label);
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height));
@@ -93,9 +90,8 @@ public class TelaSupervisor extends BasePanel {
                     case "Locais":
                         mostrarLocal();
                         break;
-                    case "Horários":
-                        //mostrarHorarios();
-                        break;
+                    case "Sair":
+                        screenManager.showScreen(new TelaInicial(screenManager));
                 }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -125,8 +121,118 @@ public class TelaSupervisor extends BasePanel {
     }
 
     private void mostrarMonitorias() {
+        List<Monitoria> monitorias = new ArrayList<>();
+        String sql = "SELECT d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, " +
+                "COUNT(im.id_aluno) AS total_inscritos, m.id AS monitoria_id, m.id_monitor, m.id_supervisor " +
+                "FROM monitoria m " +
+                "JOIN disciplina d ON m.disciplina = d.codigo " +
+                "JOIN local l ON m.local = l.id " +
+                "JOIN horario h ON m.horario = h.id " +
+                "LEFT JOIN inscricao_monitoria im ON m.id = im.id_monitoria " +
+                "GROUP BY m.id;";
 
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql);
+             ResultSet rs = sta.executeQuery()) {
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.println("Column " + i + ": " + metaData.getColumnName(i));
+            }
+
+            while (rs.next()) {
+                Disciplina disciplina = new Disciplina(rs.getString("disciplina_nome"), rs.getString("disciplina_codigo"));
+                Local local = new Local(rs.getInt("monitoria_id"), rs.getString("sala"), rs.getInt("total_inscritos"), rs.getInt("capacidade"));
+                Horario horario = new Horario(rs.getString("dia_semana"), rs.getString("horas"));
+
+                int idMonitoria = rs.getInt("monitoria_id");
+                int idMonitor = rs.getInt("id_monitor");
+                int idSupervisor = rs.getInt("id_supervisor");
+                int totalInscritos = rs.getInt("total_inscritos");
+
+                Monitoria monitoria = new Monitoria(disciplina, horario, local, idMonitor, idSupervisor, totalInscritos);
+                monitorias.add(monitoria);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Criar o modelo da tabela
+        String[] columnNames = {"Disciplina", "Sala", "Inscritos", "Capacidade", "Dia", "Horário"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        for (Monitoria monitoria : monitorias) {
+            Object[] row = {
+                    monitoria.getDisciplina().getNome(),
+                    monitoria.getLocal().getSala(),
+                    monitoria.getLocal().getInscritos(),
+                    monitoria.getLocal().getCapacidade(),
+                    monitoria.getHorario().getDiaSemana(),
+                    monitoria.getHorario().getHoras()
+            };
+            tableModel.addRow(row);
+        }
+
+        // Criar e configurar a tabela
+        JTable table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
+        table.setBorder(BorderFactory.createLineBorder(Color.decode("#3176FB"), 2));
+
+        // Configurar a fonte da tabela para 18 pontos
+        Font tableFont = new Font("SansSerif", Font.PLAIN, 18);
+        table.setFont(tableFont);
+        table.getTableHeader().setFont(tableFont);
+
+        // Centralizar todas as colunas
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        // Criar e configurar o JScrollPane
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adiciona algum espaçamento
+
+        // Atualizar o painel direito na EDT
+        SwingUtilities.invokeLater(() -> {
+            rightPanel.removeAll();
+            rightPanel.add(scrollPane, BorderLayout.CENTER);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+
+            // Adicionar o painel inferior com os botões
+            JPanel bottomPanel = new JPanel();
+            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+            StyleButton adicionarButton = new StyleButton("Criar Monitoria");
+            adicionarButton.setPreferredSize(new Dimension(180, 50));
+            adicionarButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
+            adicionarButton.addActionListener(e -> adicionarMonitoria());
+            bottomPanel.add(adicionarButton);
+
+            StyleButton excluirButton = new StyleButton("Excluir Monitoria");
+            excluirButton.setPreferredSize(new Dimension(180, 50));
+            excluirButton.setFont(new Font("SansSerif", Font.PLAIN, 17));
+            excluirButton.addActionListener(e -> excluirMonitoria());
+            bottomPanel.add(excluirButton);
+
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
     }
+
+
+    private void excluirMonitoria() {
+    }
+
+    private void adicionarMonitoria() {
+    }
+
 
     private void mostrarMonitores() {
         List<Monitor> monitores = new ArrayList<>();
