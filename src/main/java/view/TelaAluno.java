@@ -1,9 +1,9 @@
-package GUI;
+package view;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static GUI.AppGUI.mostrarMensagem;
+import static view.AppGUI.mostrarMensagem;
 
 public class TelaAluno extends BasePanel{
 

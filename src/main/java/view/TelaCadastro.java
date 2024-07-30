@@ -1,9 +1,7 @@
-package GUI;
+package view;
 
 import javax.swing.*;
 import java.awt.*;
-
-import static GUI.AppGUI.mostrarMensagem;
 
 public class TelaCadastro {
 

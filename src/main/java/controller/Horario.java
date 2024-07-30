@@ -1,4 +1,4 @@
-package DTO;
+package controller;
 
 public class Horario {
 

@@ -1,10 +1,10 @@
-package DTO;
+package controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static DAO.conexao.getConexao;
+import static dao.conexao.getConexao;
 
 public class Supervisor extends Usuario {
 
@@ -12,22 +12,43 @@ public class Supervisor extends Usuario {
         super(matricula, nome, email, senha, "S");
     }
 
-    public void criarMonitoria(Disciplina disciplina, Horario horario, Local local,int idMonitor, int idSupervisor) throws SQLException {
-        String sql = "insert into monitoria values (?,?,?,?,?)";
-        try (Connection conexao = getConexao();){
-            PreparedStatement sta = conexao.prepareStatement(sql);
-            sta.setString(1, disciplina.getCodigo());
+    private int obterCodigoDisciplina(String codigoDisciplina) throws SQLException {
+        String sql = "SELECT codigo FROM disciplina WHERE codigo = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, codigoDisciplina);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("codigo");
+                } else {
+                    return -1; // Disciplina não encontrada
+                }
+            }
+        }
+    }
+
+    public void criarMonitoria(Disciplina disciplina, Horario horario, Local local, int idMonitor, int idSupervisor) throws SQLException {
+        String sql = "INSERT INTO monitoria (disciplina, horario, local, id_monitor, id_supervisor) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+
+            int idDisciplina = obterCodigoDisciplina(disciplina.getCodigo());
+            if (idDisciplina == -1) {
+                // Trate o caso onde a disciplina não foi encontrada
+                throw new SQLException("Disciplina não encontrada");
+            }
+            sta.setInt(1, idDisciplina);
             sta.setInt(2, horario.getId());
             sta.setInt(3, local.getId());
             sta.setInt(4, idMonitor);
             sta.setInt(5, idSupervisor);
             sta.executeUpdate();
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 
     public boolean promoverAlunoParaMonitor(Aluno aluno) {
         String sql = "UPDATE usuario SET tipo = 'M' WHERE matricula = ?";

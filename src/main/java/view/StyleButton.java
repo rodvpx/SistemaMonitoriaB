@@ -1,4 +1,4 @@
-package GUI;
+package view;
 
 import javax.swing.JButton;
 import java.awt.*;
@@ -10,7 +10,7 @@ public class StyleButton extends JButton {
     private static final int BORDER_THICKNESS = 3; // Espessura da borda
     private static final int BORDER_RADIUS = 32; // Raio das bordas arredondadas
     private Color normalColor = Color.WHITE;
-    private Color hoverColor = Color.LIGHT_GRAY;
+    private Color hoverColor = Color.decode("#C6E2FF");
 
     public StyleButton(String txt) {
         super(txt);

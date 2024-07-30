@@ -1,11 +1,11 @@
-package DTO;
+package controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static DAO.conexao.getConexao;
+import static dao.conexao.getConexao;
 
 public abstract class Usuario {
 

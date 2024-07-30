@@ -1,14 +1,14 @@
-package GUI;
+package view;
 
-import DTO.Aluno;
-import DTO.Supervisor;
-import DTO.Usuario;
+import controller.Aluno;
+import controller.Supervisor;
+import controller.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
 
-import static GUI.AppGUI.mostrarMensagem;
+import static view.AppGUI.mostrarMensagem;
 
 public class TelaLogin extends BasePanel {
     private ScreenManager screenManager;

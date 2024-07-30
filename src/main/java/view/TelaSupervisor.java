@@ -1,6 +1,6 @@
-package GUI;
+package view;
 
-import DTO.*;
+import controller.*;
 
 import javax.swing.*;
 
@@ -13,7 +13,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static DAO.conexao.getConexao;
+import static dao.conexao.getConexao;
 
 public class TelaSupervisor extends BasePanel {
 
@@ -231,6 +231,219 @@ public class TelaSupervisor extends BasePanel {
     }
 
     private void adicionarMonitoria() {
+        JFrame frame = new JFrame("Adicionar Monitoria");
+        frame.setSize(400, 350);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null); // Centraliza a janela na tela
+
+        // Painel do formulário
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Espaçamento ao redor
+
+        // Componentes para seleção de disciplina
+        JLabel disciplinaLabel = new JLabel("Disciplina:");
+        JComboBox<String> disciplinaComboBox = new JComboBox<>(getDisciplinas());
+        disciplinaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        // Componentes para seleção de sala
+        JLabel salaLabel = new JLabel("Sala:");
+        JComboBox<String> salaComboBox = new JComboBox<>(getSalas());
+        salaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        // Componentes para seleção de monitor
+        JLabel monitorLabel = new JLabel("Monitor:");
+        JComboBox<String> monitorComboBox = new JComboBox<>(getMonitores());
+        monitorComboBox.setPreferredSize(new Dimension(200, 30));
+
+        // Componentes para seleção do dia da semana
+        JLabel diaLabel = new JLabel("Dia da Semana:");
+        String[] diasSemana = {"Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"};
+        JComboBox<String> diaComboBox = new JComboBox<>(diasSemana);
+        diaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        // Componentes para seleção de horário
+        JLabel horarioLabel = new JLabel("Horário:");
+        String[] horarios = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"};
+        JComboBox<String> horarioComboBox = new JComboBox<>(horarios);
+        horarioComboBox.setPreferredSize(new Dimension(200, 30));
+
+        // Configuração das fontes
+        Font labelFont = new Font("SansSerif", Font.BOLD, 14);
+        disciplinaLabel.setFont(labelFont);
+        salaLabel.setFont(labelFont);
+        monitorLabel.setFont(labelFont);
+        diaLabel.setFont(labelFont);
+        horarioLabel.setFont(labelFont);
+
+        // Adicionando componentes ao painel do formulário
+        formPanel.add(disciplinaLabel);
+        formPanel.add(disciplinaComboBox);
+        formPanel.add(salaLabel);
+        formPanel.add(salaComboBox);
+        formPanel.add(monitorLabel);
+        formPanel.add(monitorComboBox);
+        formPanel.add(diaLabel);
+        formPanel.add(diaComboBox);
+        formPanel.add(horarioLabel);
+        formPanel.add(horarioComboBox);
+
+        // Painel dos botões
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton salvarButton = new JButton("Salvar");
+        salvarButton.setPreferredSize(new Dimension(150, 30));
+        salvarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        JButton cancelarButton = new JButton("Cancelar");
+        cancelarButton.setPreferredSize(new Dimension(150, 30));
+        cancelarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        buttonPanel.add(salvarButton);
+        buttonPanel.add(cancelarButton);
+
+        // Adicionando ActionListener para o botão salvar
+        salvarButton.addActionListener(e -> {
+            String disciplinaSelecionada = (String) disciplinaComboBox.getSelectedItem();
+            String salaSelecionada = (String) salaComboBox.getSelectedItem();
+            String monitorSelecionado = (String) monitorComboBox.getSelectedItem();
+            String diaSelecionado = (String) diaComboBox.getSelectedItem();
+            String horarioSelecionado = (String) horarioComboBox.getSelectedItem();
+
+            if (disciplinaSelecionada.isEmpty() || salaSelecionada.isEmpty() || monitorSelecionado.isEmpty()
+                    || diaSelecionado.isEmpty() || horarioSelecionado.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String codDisciplina = Integer.toString(obterCodigoDisciplina(disciplinaSelecionada));
+                Local local = obterLocal(salaSelecionada);
+                int idSupervisor = Integer.parseInt(supervisor.getMatricula());
+                int idMonitor = obterIdMonitor(monitorSelecionado);
+
+                Disciplina disciplina = new Disciplina(disciplinaSelecionada, codDisciplina);
+                Horario horario = new Horario(diaSelecionado, horarioSelecionado);
+                try {
+                    supervisor.criarMonitoria(disciplina, horario, local, idMonitor, idSupervisor);
+                    JOptionPane.showMessageDialog(frame, "Monitoria adicionada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    frame.dispose(); // Fecha a janela após salvar
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(frame, "Erro ao adicionar monitoria: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // ActionListener para o botão cancelar
+        cancelarButton.addActionListener(e -> frame.dispose());
+
+        // Adicionando painéis ao frame
+        frame.add(formPanel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Tornando a janela visível
+        frame.setVisible(true);
+    }
+
+    private int obterIdMonitor(String nomeMonitor) {
+        String sql = "SELECT id FROM usuario WHERE nome = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nomeMonitor);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+
+    private Local obterLocal(String nomeSala) {
+        String sql = "SELECT id, sala, capacidade, inscritos FROM local WHERE sala = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nomeSala);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String sala = rs.getString("sala");
+                int capacidade = rs.getInt("capacidade");
+                int inscritos = rs.getInt("inscritos");
+                return new Local(id, sala, capacidade, inscritos);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int obterCodigoDisciplina(String nomeDisciplina) {
+        String sql = "SELECT codigo FROM disciplina WHERE nome = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nomeDisciplina);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("codigo");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private String[] getMonitores() {
+        List<String> monitores = new ArrayList<>();
+        String sql = "SELECT nome FROM usuario WHERE tipo = 'M' ORDER BY nome ASC";
+
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                monitores.add(rs.getString("nome"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return monitores.toArray(new String[0]); // Convertendo a lista para um array de Strings
+    }
+
+    private String[] getSalas() {
+        List<String> salas = new ArrayList<>();
+
+        String sqlSalas = "SELECT sala FROM local ORDER BY sala";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sqlSalas);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                salas.add(rs.getString("sala"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return salas.toArray(new String[0]); // Convertendo a lista para um array de Strings
+    }
+
+    private String[] getDisciplinas() {
+        List<String> disciplinas = new ArrayList<>();
+
+        String sqlDisciplinas = "SELECT nome FROM disciplina ORDER BY nome";
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sqlDisciplinas);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                disciplinas.add(rs.getString("nome"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return disciplinas.toArray(new String[0]); // Convertendo a lista para um array de Strings
     }
 
 
