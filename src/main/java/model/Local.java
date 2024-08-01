@@ -1,4 +1,4 @@
-package controller;
+package model;
 
 public class Local {
     private int id;

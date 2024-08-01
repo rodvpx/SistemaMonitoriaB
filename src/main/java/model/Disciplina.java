@@ -1,4 +1,4 @@
-package controller;
+package model;
 
 public class Disciplina {
 
@@ -15,13 +15,6 @@ public class Disciplina {
         this.codigo = codigo;
     }
 
-    public void adicionarMonitor(Monitor monitor) {
-        this.monitor = monitor;
-    }
-
-    public void removerMonitor() {
-        this.monitor = null;
-    }
 
     public String getNome() {
         return nome;
@@ -39,11 +32,4 @@ public class Disciplina {
         this.codigo = codigo;
     }
 
-    public Monitor getMonitor() {
-        return monitor;
-    }
-
-    public void setMonitor(Monitor monitor) {
-        this.monitor = monitor;
-    }
 }

@@ -1,6 +1,6 @@
 package view;
 
-import controller.*;
+import model.*;
 
 import javax.swing.*;
 
@@ -13,19 +13,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dao.conexao.getConexao;
+import static factory.conexao.getConexao;
 
-public class TelaSupervisor extends BasePanel {
+public class SupervisorView extends BasePanel {
 
-    private ScreenManager screenManager;
-    private Supervisor supervisor;
     private JPanel rightPanel;
 
-    public TelaSupervisor(ScreenManager screenManager, Supervisor supervisor) {
-        super();
-        this.screenManager = screenManager;
-        this.supervisor = supervisor;
-        setLayout(new BorderLayout());
+    public SupervisorView() {
         criarPainelSupervisor();
     }
 
@@ -91,7 +85,7 @@ public class TelaSupervisor extends BasePanel {
                         mostrarLocal();
                         break;
                     case "Sair":
-                        screenManager.showScreen(new TelaInicial(screenManager));
+                        screenManager.showScreen(new PrincipalView(screenManager));
                 }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -120,45 +114,7 @@ public class TelaSupervisor extends BasePanel {
         panel.add(button);
     }
 
-    private void mostrarMonitorias() {
-        List<Monitoria> monitorias = new ArrayList<>();
-        String sql = "SELECT d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, " +
-                "COUNT(im.id_aluno) AS total_inscritos, m.id AS monitoria_id, m.id_monitor, m.id_supervisor " +
-                "FROM monitoria m " +
-                "JOIN disciplina d ON m.disciplina = d.codigo " +
-                "JOIN local l ON m.local = l.id " +
-                "JOIN horario h ON m.horario = h.id " +
-                "LEFT JOIN inscricao_monitoria im ON m.id = im.id_monitoria " +
-                "GROUP BY m.id;";
-
-        try (Connection conn = getConexao();
-             PreparedStatement sta = conn.prepareStatement(sql);
-             ResultSet rs = sta.executeQuery()) {
-
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.println("Column " + i + ": " + metaData.getColumnName(i));
-            }
-
-            while (rs.next()) {
-                Disciplina disciplina = new Disciplina(rs.getString("disciplina_nome"), rs.getString("disciplina_codigo"));
-                Local local = new Local(rs.getInt("monitoria_id"), rs.getString("sala"), rs.getInt("total_inscritos"), rs.getInt("capacidade"));
-                Horario horario = new Horario(rs.getString("dia_semana"), rs.getString("horas"));
-
-                int idMonitoria = rs.getInt("monitoria_id");
-                int idMonitor = rs.getInt("id_monitor");
-                int idSupervisor = rs.getInt("id_supervisor");
-                int totalInscritos = rs.getInt("total_inscritos");
-
-                Monitoria monitoria = new Monitoria(disciplina, horario, local, idMonitor, idSupervisor, totalInscritos);
-                monitorias.add(monitoria);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+    public void mostrarMonitorias(List<Monitoria> monitorias) {
         // Criar o modelo da tabela
         String[] columnNames = {"Disciplina", "Sala", "Inscritos", "Capacidade", "Dia", "Horário"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
@@ -226,7 +182,7 @@ public class TelaSupervisor extends BasePanel {
         });
     }
 
-
+}
     private void excluirMonitoria() {
     }
 
@@ -930,21 +886,3 @@ public class TelaSupervisor extends BasePanel {
             JOptionPane.showMessageDialog(this, "Selecione um local para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
         }
     }
-
-
-    // Método principal para testes
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Tela do Supervisor");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
-
-        // Supondo que você tenha um objeto Supervisor
-        Supervisor supervisor = new Supervisor("12345", "João da Silva", "joao@example.com", "senha123");
-
-        TelaSupervisor telaSupervisor = new TelaSupervisor(null, supervisor);
-        frame.add(telaSupervisor, BorderLayout.CENTER);
-
-        frame.setVisible(true);
-    }
-}

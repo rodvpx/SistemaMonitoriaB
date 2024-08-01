@@ -1,4 +1,4 @@
-package controller;
+package model;
 
 public class Monitoria {
     private Disciplina disciplina;
@@ -18,13 +18,7 @@ public class Monitoria {
         this.totalInscritos = totalInscritos;
     }
 
-    public void inscreverAluno(Aluno aluno) {
-        // Implementar lógica para inscrever aluno
-    }
 
-    public void desinscreverAluno(Aluno aluno) {
-        // Implementar lógica para desinscrever aluno
-    }
 
     public Disciplina getDisciplina() {
         return disciplina;

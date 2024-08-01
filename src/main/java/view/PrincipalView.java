@@ -4,20 +4,20 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.JLabel;
+import javax.swing.*;
 
-public class TelaInicial extends BasePanel {
-    private ScreenManager screenManager;
+public class PrincipalView extends BasePanel {
 
-    public TelaInicial(ScreenManager screenManager) {
-        super();
-        this.screenManager = screenManager;
-        setLayout(new GridBagLayout());
-        criarPainelInicial();
+    private StyleButton botaoLogin;
+    private StyleButton botaoCadastro;
+    private StyleButton botaoSair;
+
+    public PrincipalView() {
+        criarPainelPrincipal();
     }
 
-    public void criarPainelInicial() {
-        //JPanel painel = new JPanel(new GridBagLayout());
+    private void criarPainelPrincipal() {
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Configurações iniciais do GridBagConstraints
@@ -42,7 +42,7 @@ public class TelaInicial extends BasePanel {
         add(botaoLogin, gbc);
 
         // Botão Cadastro
-        StyleButton botaoCadastro = new StyleButton("Cadastro");
+        botaoCadastro = new StyleButton("Cadastro"); // Atribui o botão ao campo da classe
         gbc.gridx = 0;
         gbc.gridy = 2;
         add(botaoCadastro, gbc);
@@ -52,12 +52,17 @@ public class TelaInicial extends BasePanel {
         gbc.gridx = 0;
         gbc.gridy = 3;
         add(botaoSair, gbc);
+    }
 
-        // Adiciona ações aos botões
-        botaoLogin.addActionListener(e -> { screenManager.showScreen(new TelaLogin(screenManager));});
-        botaoCadastro.addActionListener(e -> screenManager.showScreen(new TelaCadastro(screenManager).criarPainelCadastro()));
-        botaoSair.addActionListener(e -> System.exit(0));
+    public StyleButton getBotaoLogin() {
+        return botaoLogin;
+    }
 
-        //return painel;
+    public StyleButton getBotaoCadastro() {
+        return botaoCadastro;
+    }
+
+    public StyleButton getBotaoSair() {
+        return botaoSair;
     }
 }
