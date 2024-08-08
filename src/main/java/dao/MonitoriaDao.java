@@ -9,11 +9,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dao.DisciplinaDao.obterCodigoDisciplina;
 import static factory.conexao.getConexao;
 
 public class MonitoriaDao {
 
-    public List<Monitoria> buscarTodasMonitorias() {
+    static public List<Monitoria> buscarTodasMonitorias() {
         List<Monitoria> monitorias = new ArrayList<>();
         String sql = "SELECT d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, " +
                 "COUNT(im.id_aluno) AS total_inscritos, m.id AS monitoria_id, m.id_monitor, m.id_supervisor " +
@@ -47,6 +48,30 @@ public class MonitoriaDao {
         }
 
         return monitorias;
+    }
+
+
+
+    public static void criarMonitoria(Disciplina disciplina, Horario horario, Local local, int idMonitor, int idSupervisor) throws SQLException {
+        String sql = "INSERT INTO monitoria (disciplina, horario, local, id_monitor, id_supervisor) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+
+            int idDisciplina = obterCodigoDisciplina(disciplina.getCodigo());
+            if (idDisciplina == -1) {
+                // Trate o caso onde a disciplina não foi encontrada
+                throw new SQLException("Disciplina não encontrada");
+            }
+            sta.setInt(1, idDisciplina);
+            sta.setInt(2, horario.getId());
+            sta.setInt(3, local.getId());
+            sta.setInt(4, idMonitor);
+            sta.setInt(5, idSupervisor);
+            sta.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void inscreverAluno(Aluno aluno) {

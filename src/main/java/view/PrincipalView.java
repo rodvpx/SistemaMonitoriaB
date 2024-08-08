@@ -35,20 +35,20 @@ public class PrincipalView extends BasePanel {
         add(tituloLabel, gbc);
 
         // Botão Login
-        StyleButton botaoLogin = new StyleButton("Login");
+        botaoLogin = new StyleButton("Login"); // Atribui ao campo da classe
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         add(botaoLogin, gbc);
 
         // Botão Cadastro
-        botaoCadastro = new StyleButton("Cadastro"); // Atribui o botão ao campo da classe
+        botaoCadastro = new StyleButton("Cadastro"); // Atribui ao campo da classe
         gbc.gridx = 0;
         gbc.gridy = 2;
         add(botaoCadastro, gbc);
 
         // Botão Sair
-        StyleButton botaoSair = new StyleButton("Sair");
+        botaoSair = new StyleButton("Sair"); // Atribui ao campo da classe
         gbc.gridx = 0;
         gbc.gridy = 3;
         add(botaoSair, gbc);
