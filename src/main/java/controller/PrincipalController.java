@@ -5,7 +5,6 @@ import model.*;
 import view.LoginView;
 import view.PrincipalView;
 import view.CadastroView;
-import view.SupervisorView;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -13,9 +12,11 @@ import java.sql.SQLException;
 public class PrincipalController {
 
     private PrincipalView principalView;
+    private JFrame principalFrame;
 
-    public PrincipalController(PrincipalView principalView) {
+    public PrincipalController(PrincipalView principalView, JFrame principalFrame) {
         this.principalView = principalView;
+        this.principalFrame = principalFrame;
         inicializar();
     }
 
@@ -61,19 +62,12 @@ public class PrincipalController {
             Usuario usuario = result.getUsuario();
             String tipo = result.getTipo();
 
-
             switch (tipo) {
                 case "S":
                     Supervisor supervisor = (Supervisor) usuario;
-                    // Cria a SupervisorView com o SupervisorController
-                    SupervisorView supervisorView = new SupervisorView(supervisor);
-                    JFrame supervisorFrame = new JFrame("Supervisor");
-                    supervisorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    supervisorFrame.add(supervisorView);
-                    supervisorFrame.setSize(1080, 720);
-                    supervisorFrame.pack();
-                    supervisorFrame.setLocationRelativeTo(null); // Centraliza a janela
-                    supervisorFrame.setVisible(true);
+                    SupervisorController supController = new SupervisorController(supervisor, this);
+                    supController.mostrarView();
+                    fecharTelaPrincipal();
                     break;
                 case "A":
                     Aluno aluno = (Aluno) usuario;
@@ -101,7 +95,15 @@ public class PrincipalController {
     }
 
     public void mostrarPrincipalView() {
-        principalView.setVisible(true);
+        if (principalFrame != null) {
+            principalFrame.setVisible(true); // Torna a tela principal visível
+        }
+    }
+
+    private void fecharTelaPrincipal() {
+        if (principalFrame != null) {
+            principalFrame.dispose();
+        }
     }
 
 }

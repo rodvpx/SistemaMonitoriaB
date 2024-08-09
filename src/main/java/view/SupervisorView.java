@@ -22,15 +22,12 @@ public class SupervisorView extends BasePanel {
     private JPanel rightPanel;
     private Supervisor supervisor;
     private SupervisorController controller;
-    private PrincipalController pcontroller;
 
-    public SupervisorView(Supervisor supervisor) {
+    public SupervisorView(Supervisor supervisor, SupervisorController controller) {
         this.supervisor = supervisor;
-        // Passa o pcontroller ao SupervisorController
-        this.controller = new SupervisorController(this, null);
+        this.controller = controller;
         criarPainelSupervisor();
     }
-
 
     private void criarPainelSupervisor() {
         setLayout(new BorderLayout());
@@ -323,7 +320,6 @@ public class SupervisorView extends BasePanel {
 
         frame.setVisible(true);
     }
-
 
 
     private void configureTable(JTable table) {

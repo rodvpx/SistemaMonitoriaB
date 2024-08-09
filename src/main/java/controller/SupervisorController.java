@@ -8,7 +8,6 @@ import view.SupervisorView;
 import model.Supervisor;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -19,10 +18,21 @@ public class SupervisorController implements ActionListener {
     private SupervisorView view;
     private Supervisor supervisor;
 
-    public SupervisorController(SupervisorView view, PrincipalController principalController) {
-        this.view = view;
-        this.principalController = principalController; // Corrigido aqui
+    public SupervisorController(Supervisor supervisor, PrincipalController principalController) {
+        this.supervisor = supervisor;
+        this.principalController = principalController;
+        this.view = new SupervisorView(supervisor, this); // Cria a view passando o controller
     }
+
+    public void mostrarView() {
+        JFrame frame = new JFrame("Supervisor");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.add(view);
+        frame.setSize(1080, 720);
+        frame.setLocationRelativeTo(null); // Centraliza a janela
+        frame.setVisible(true);
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -50,11 +60,11 @@ public class SupervisorController implements ActionListener {
                 break;
             case "Sair":
                 if (principalController != null) {
-                    principalController.mostrarPrincipalView();
+                    principalController.mostrarPrincipalView(); // Mostra a tela principal
                 }
-                Window window = SwingUtilities.getWindowAncestor(view);
-                if (window instanceof JFrame) {
-                    ((JFrame) window).dispose();
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(view);
+                if (frame != null) {
+                    frame.dispose(); // Fecha a tela do supervisor
                 }
                 break;
 
