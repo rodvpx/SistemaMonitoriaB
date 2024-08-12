@@ -230,6 +230,7 @@ public class SupervisorView extends BasePanel {
 
 
     public void adicionarMonitoria() {
+
         JFrame frame = new JFrame("Adicionar Monitoria");
         frame.setSize(400, 350);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -239,7 +240,7 @@ public class SupervisorView extends BasePanel {
         formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Espaçamento ao redor
 
         JLabel disciplinaLabel = new JLabel("Disciplina:");
-        JComboBox<String> disciplinaComboBox = new JComboBox<>(DisciplinaDao.getDisciplinas());
+        JComboBox<Disciplina> disciplinaComboBox = new JComboBox<>(DisciplinaDao.getDisciplinas());
         disciplinaComboBox.setPreferredSize(new Dimension(200, 30));
 
         JLabel salaLabel = new JLabel("Sala:");
@@ -256,9 +257,9 @@ public class SupervisorView extends BasePanel {
         diaComboBox.setPreferredSize(new Dimension(200, 30));
 
         JLabel horarioLabel = new JLabel("Horário:");
-        String[] horarios = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"};
-        JComboBox<String> horarioComboBox = new JComboBox<>(horarios);
-        horarioComboBox.setPreferredSize(new Dimension(200, 30));
+        JTextField horarioField = new JTextField();
+        horarioField.setPreferredSize(new Dimension(200, 30));
+
 
         Font labelFont = new Font("SansSerif", Font.BOLD, 14);
         disciplinaLabel.setFont(labelFont);
@@ -276,7 +277,7 @@ public class SupervisorView extends BasePanel {
         formPanel.add(diaLabel);
         formPanel.add(diaComboBox);
         formPanel.add(horarioLabel);
-        formPanel.add(horarioComboBox);
+        formPanel.add(horarioField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton salvarButton = new JButton("Salvar");
@@ -289,21 +290,20 @@ public class SupervisorView extends BasePanel {
         buttonPanel.add(salvarButton);
         buttonPanel.add(cancelarButton);
 
-        //SupervisorController controller = new SupervisorController(supervisor);
-
         salvarButton.addActionListener(e -> {
-            String disciplinaSelecionada = (String) disciplinaComboBox.getSelectedItem();
+            Disciplina disciplinaSelecionada = (Disciplina) disciplinaComboBox.getSelectedItem();
             String salaSelecionada = (String) salaComboBox.getSelectedItem();
             String monitorSelecionado = (String) monitorComboBox.getSelectedItem();
             String diaSelecionado = (String) diaComboBox.getSelectedItem();
-            String horarioSelecionado = (String) horarioComboBox.getSelectedItem();
+            String horarioSelecionado = (String) horarioField.getText();
 
-            if (disciplinaSelecionada.isEmpty() || salaSelecionada.isEmpty() || monitorSelecionado.isEmpty()
+            if (disciplinaSelecionada == null || salaSelecionada.isEmpty() || monitorSelecionado.isEmpty()
                     || diaSelecionado.isEmpty() || horarioSelecionado.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
-                    controller.criarMonitoria(disciplinaSelecionada, diaSelecionado, horarioSelecionado, salaSelecionada, monitorSelecionado);
+                   Disciplina disciplina = new Disciplina(disciplinaSelecionada.getCodigo(), disciplinaSelecionada.getNome());
+                    controller.criarMonitoriaCon(disciplina, diaSelecionado, horarioSelecionado, salaSelecionada, monitorSelecionado);
                     JOptionPane.showMessageDialog(frame, "Monitoria adicionada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     frame.dispose(); // Fecha a janela após salvar
                 } catch (SQLException ex) {
@@ -320,6 +320,7 @@ public class SupervisorView extends BasePanel {
 
         frame.setVisible(true);
     }
+
 
 
     private void configureTable(JTable table) {

@@ -74,13 +74,12 @@ public class SupervisorController implements ActionListener {
         }
     }
 
-    public void criarMonitoria(String disciplinaNome, String dia, String horarioStr, String salaNome, String monitorNome) throws SQLException {
-        String codDisciplina = Integer.toString(DisciplinaDao.obterCodigoDisciplina(disciplinaNome));
+    public void criarMonitoriaCon(Disciplina disciplina, String dia, String horarioStr, String salaNome, String monitorNome) throws SQLException {
+
         Local local = LocalDao.obterLocal(salaNome);
         int idSupervisor = SupervisorDao.obterIdSupervisor(supervisor.getMatricula());
         int idMonitor = MonitorDao.obterIdMonitor(monitorNome);
 
-        Disciplina disciplina = new Disciplina(disciplinaNome, codDisciplina);
         Horario horario = new Horario(dia, horarioStr);
 
         MonitoriaDao.criarMonitoria(disciplina, horario, local, idMonitor, idSupervisor);

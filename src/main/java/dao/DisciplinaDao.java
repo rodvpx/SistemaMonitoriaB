@@ -28,24 +28,28 @@ public class DisciplinaDao {
         return -1;
     }
 
-    public static String[] getDisciplinas() {
-        List<String> disciplinas = new ArrayList<>();
+    public static Disciplina[] getDisciplinas() {
+        List<Disciplina> disciplinas = new ArrayList<>();
 
-        String sqlDisciplinas = "SELECT nome FROM disciplina ORDER BY nome";
+        String sqlDisciplinas = "SELECT codigo, nome FROM disciplina ORDER BY nome";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sqlDisciplinas);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                disciplinas.add(rs.getString("nome"));
+                String codigo = rs.getString("codigo");
+                String nome = rs.getString("nome");
+                disciplinas.add(new Disciplina(codigo, nome)); // Cria uma nova Disciplina com código e nome
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return disciplinas.toArray(new String[0]); // Convertendo a lista para um array de Strings
+        return disciplinas.toArray(new Disciplina[0]); // Converte a lista para um array de Disciplina
     }
+
+
 
     private boolean verificarCodigoExistente(String codigo) throws SQLException {
         String sql = "SELECT COUNT(*) FROM disciplina WHERE codigo = ?";

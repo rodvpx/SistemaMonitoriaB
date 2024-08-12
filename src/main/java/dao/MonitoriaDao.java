@@ -2,10 +2,7 @@ package dao;
 
 import model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,28 +48,47 @@ public class MonitoriaDao {
     }
 
 
-
     public static void criarMonitoria(Disciplina disciplina, Horario horario, Local local, int idMonitor, int idSupervisor) throws SQLException {
-        String sql = "INSERT INTO monitoria (disciplina, horario, local, id_monitor, id_supervisor) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = getConexao();
-             PreparedStatement sta = conn.prepareStatement(sql)) {
+        // Conexão única para garantir consistência transacional
+        try (Connection conn = getConexao()) {
+            conn.setAutoCommit(false); // Iniciar transação
 
-            int idDisciplina = obterCodigoDisciplina(disciplina.getCodigo());
-            if (idDisciplina == -1) {
-                // Trate o caso onde a disciplina não foi encontrada
-                throw new SQLException("Disciplina não encontrada");
+            // Inserindo o horário
+            String sqlhoras = "INSERT INTO horario (dia_semana, horas) VALUES (?, ?)";
+            try (PreparedStatement sta = conn.prepareStatement(sqlhoras, Statement.RETURN_GENERATED_KEYS)) {
+                sta.setString(1, horario.getDiaSemana());
+                sta.setString(2, horario.getHoras());
+                sta.executeUpdate();
+
+                ResultSet rs = sta.getGeneratedKeys();
+                if (rs.next()) {
+                    horario.setId(rs.getInt(1)); // Recupere o ID gerado automaticamente
+                }
+            } catch (SQLException e) {
+                conn.rollback(); // Desfaz as operações se ocorrer algum erro
+                e.printStackTrace();
+                throw e;
             }
-            sta.setInt(1, idDisciplina);
-            sta.setInt(2, horario.getId());
-            sta.setInt(3, local.getId());
-            sta.setInt(4, idMonitor);
-            sta.setInt(5, idSupervisor);
-            sta.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+            // Inserindo a monitoria
+            String sql = "INSERT INTO monitoria (disciplina, horario, local, id_monitor, id_supervisor) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement sta = conn.prepareStatement(sql)) {
+                sta.setInt(1, Integer.parseInt(disciplina.getCodigo()));
+                sta.setInt(2, horario.getId());
+                sta.setInt(3, local.getId());
+                sta.setInt(4, idMonitor);
+                sta.setInt(5, idSupervisor);
+                sta.executeUpdate();
+
+                conn.commit(); // Confirma a transação
+            } catch (SQLException e) {
+                conn.rollback(); // Desfaz as operações se ocorrer algum erro
+                e.printStackTrace();
+                throw e;
+            }
         }
     }
+
 
     public void inscreverAluno(Aluno aluno) {
         // Implementar lógica para inscrever aluno

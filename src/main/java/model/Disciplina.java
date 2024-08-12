@@ -10,9 +10,9 @@ public class Disciplina {
     public Disciplina() {}
 
     // Construtor com parâmetros
-    public Disciplina(String nome, String codigo) {
-        this.nome = nome;
+    public Disciplina(String codigo, String nome) {
         this.codigo = codigo;
+        this.nome = nome;
     }
 
 
@@ -30,6 +30,11 @@ public class Disciplina {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    @Override
+    public String toString() {
+        return nome; // Sobrescreve toString() para exibir o nome da disciplina
     }
 
 }
