@@ -10,7 +10,7 @@ public class Disciplina {
     public Disciplina() {}
 
     // Construtor com parâmetros
-    public Disciplina(String codigo, String nome) {
+    public Disciplina(String nome, String codigo) {
         this.codigo = codigo;
         this.nome = nome;
     }

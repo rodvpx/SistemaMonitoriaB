@@ -90,6 +90,27 @@ public class MonitorDao {
         return monitores.toArray(new String[0]); // Convertendo a lista para um array de Strings
     }
 
+    public static String getMonitorId(Integer id) {
+        String nomeMonitor = null;
+        String sql = "SELECT nome FROM usuario WHERE id = ? AND tipo = 'M'";
+
+        try (Connection conn = getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);  // Define o ID do monitor no SQL
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    nomeMonitor = rs.getString("nome");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return nomeMonitor;  // Retorna o nome do monitor ou null se não for encontrado
+    }
+
     public void definirHorario(Aluno disciplina, Horario horario, Local local) {
 
     }

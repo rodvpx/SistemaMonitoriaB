@@ -39,7 +39,7 @@ public class DisciplinaDao {
             while (rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nome = rs.getString("nome");
-                disciplinas.add(new Disciplina(codigo, nome)); // Cria uma nova Disciplina com código e nome
+                disciplinas.add(new Disciplina(nome, codigo)); // Cria uma nova Disciplina com código e nome
             }
 
         } catch (SQLException e) {

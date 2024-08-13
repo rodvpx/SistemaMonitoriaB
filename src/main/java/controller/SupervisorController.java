@@ -1,11 +1,8 @@
 package controller;
 
 import dao.*;
-import model.Disciplina;
-import model.Horario;
-import model.Local;
+import model.*;
 import view.SupervisorView;
-import model.Supervisor;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -27,6 +24,7 @@ public class SupervisorController implements ActionListener {
     public void mostrarView() {
         JFrame frame = new JFrame("Supervisor");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        util.IconUtil.setIcon(frame);
         frame.add(view);
         frame.setSize(1080, 720);
         frame.setLocationRelativeTo(null); // Centraliza a janela
@@ -83,10 +81,12 @@ public class SupervisorController implements ActionListener {
         Horario horario = new Horario(dia, horarioStr);
 
         MonitoriaDao.criarMonitoria(disciplina, horario, local, idMonitor, idSupervisor);
+        view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
     }
 
-    public void excluirMonitoria() {
-        // Implementar lógica para excluir monitoria
+    public void excluirMonitoria(Monitoria monitoria) throws SQLException {
+       MonitoriaDao.excluirMonitoria(monitoria);
+        view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
     }
 
     public void promoverMonitor() {

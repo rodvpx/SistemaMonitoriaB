@@ -18,7 +18,7 @@ public class LoginView extends BasePanel {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        ImageIcon originalIcon = new ImageIcon("Img/user-286.png");
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/Img/user-286.png"));
         Image originalImage = originalIcon.getImage();
         Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);

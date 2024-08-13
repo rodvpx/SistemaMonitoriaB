@@ -5,14 +5,14 @@ import model.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static dao.DisciplinaDao.obterCodigoDisciplina;
 import static factory.conexao.getConexao;
 
 public class MonitoriaDao {
 
     static public List<Monitoria> buscarTodasMonitorias() {
+
         List<Monitoria> monitorias = new ArrayList<>();
+
         String sql = "SELECT d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, " +
                 "COUNT(im.id_aluno) AS total_inscritos, m.id AS monitoria_id, m.id_monitor, m.id_supervisor " +
                 "FROM monitoria m " +
@@ -36,7 +36,7 @@ public class MonitoriaDao {
                 int idSupervisor = rs.getInt("id_supervisor");
                 int totalInscritos = rs.getInt("total_inscritos");
 
-                Monitoria monitoria = new Monitoria(disciplina, horario, local, idMonitor, idSupervisor, totalInscritos);
+                Monitoria monitoria = new Monitoria(disciplina, horario, local, idMonitor, idSupervisor, totalInscritos, idMonitoria);
                 monitorias.add(monitoria);
             }
 
@@ -88,6 +88,23 @@ public class MonitoriaDao {
             }
         }
     }
+
+    public static int excluirMonitoria(Monitoria monitoria) throws SQLException {
+        String sql = "DELETE FROM monitoria WHERE id = ?";
+        try (Connection conn = getConexao()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement sta = conn.prepareStatement(sql)) {
+                sta.setInt(1, monitoria.getId()); // Usa o ID armazenado na monitoria
+                int rowsAffected = sta.executeUpdate();
+                conn.commit();
+                return rowsAffected;
+            } catch (SQLException ex) {
+                conn.rollback();
+                throw ex;
+            }
+        }
+    }
+
 
 
     public void inscreverAluno(Aluno aluno) {

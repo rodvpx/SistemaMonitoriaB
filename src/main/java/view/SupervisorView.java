@@ -1,11 +1,8 @@
 package view;
 
-import controller.AdicionarMonitoriaController;
-import controller.PrincipalController;
 import dao.DisciplinaDao;
 import dao.LocalDao;
 import dao.MonitorDao;
-import dao.MonitoriaDao;
 import model.*;
 import controller.SupervisorController;
 
@@ -14,6 +11,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -22,6 +21,8 @@ public class SupervisorView extends BasePanel {
     private JPanel rightPanel;
     private Supervisor supervisor;
     private SupervisorController controller;
+    private Monitoria[] selectedMonitoria = new Monitoria[1];
+    private JPanel selectedCard;
 
     public SupervisorView(Supervisor supervisor, SupervisorController controller) {
         this.supervisor = supervisor;
@@ -38,7 +39,7 @@ public class SupervisorView extends BasePanel {
         JPanel imageNamePanel = new JPanel();
         imageNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
-        JLabel imageLabel = new JLabel(redimensionarImagem("Img/user-286.png", 60, 60));
+        JLabel imageLabel = new JLabel(SupervisorView.redimensionarImagem("user-286.png", 60, 60));
         JLabel nameLabel = new JLabel(supervisor.getNome());
         nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
@@ -70,47 +71,95 @@ public class SupervisorView extends BasePanel {
         add(rightPanel, BorderLayout.CENTER);
     }
 
-    private ImageIcon redimensionarImagem(String caminhoImagem, int largura, int altura) {
-        ImageIcon icon = new ImageIcon(caminhoImagem);
+    public static ImageIcon redimensionarImagem(String caminhoImagem, int largura, int altura) {
+        // Carrega a imagem do classpath
+        ImageIcon icon = new ImageIcon(SupervisorView.class.getResource("/Img/" + caminhoImagem));
         Image image = icon.getImage();
         Image newImage = image.getScaledInstance(largura, altura, Image.SCALE_SMOOTH);
         return new ImageIcon(newImage);
     }
 
     public void mostrarMonitorias(List<Monitoria> monitorias) {
-        String[] columnNames = {"Disciplina", "Sala", "Inscritos", "Capacidade", "Dia", "Horário"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        for (Monitoria monitoria : monitorias) {
-            Object[] row = {
-                    monitoria.getDisciplina().getNome(),
-                    monitoria.getLocal().getSala(),
-                    monitoria.getLocal().getInscritos(),
-                    monitoria.getLocal().getCapacidade(),
-                    monitoria.getHorario().getDiaSemana(),
-                    monitoria.getHorario().getHoras()
-            };
-            tableModel.addRow(row);
-        }
-
-        JTable table = new JTable(tableModel);
-        configureTable(table);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        final Monitoria[] selectedMonitoria = new Monitoria[1];
         SwingUtilities.invokeLater(() -> {
             rightPanel.removeAll();
+
+            // Painel principal com GridBagLayout para exibir as monitorias
+            JPanel monitoriaPanel = new JPanel(new GridBagLayout());
+            monitoriaPanel.setBackground(Color.WHITE);
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10); // Espaçamento entre as monitorias
+            gbc.fill = GridBagConstraints.BOTH; // Permite que os componentes se expandam se necessário
+            gbc.weightx = 1.0; // Expande horizontalmente para preencher a coluna
+            gbc.weighty = 0; // Não expande verticalmente
+
+            int column = 0;
+            int row = 0;
+            for (Monitoria monitoria : monitorias) {
+                // Criando um painel para cada monitoria
+                JPanel monitoriaCard = new JPanel();
+                monitoriaCard.setBorder(BorderFactory.createLineBorder(Color.decode("#C6E2FF"), 5));
+                monitoriaCard.setPreferredSize(new Dimension(200, 120)); // Tamanho fixo para os quadrados
+                monitoriaCard.setLayout(new BoxLayout(monitoriaCard, BoxLayout.Y_AXIS)); // Organiza os labels verticalmente
+
+                // Adiciona as informações da monitoria como labels no painel
+                monitoriaCard.add(new JLabel("Disciplina: " + monitoria.getDisciplina().getNome()));
+                monitoriaCard.add(new JLabel("Sala: " + monitoria.getLocal().getSala()));
+                monitoriaCard.add(new JLabel("Dia: " + monitoria.getHorario().getDiaSemana()));
+                monitoriaCard.add(new JLabel("Horário: " + monitoria.getHorario().getHoras()));
+                monitoriaCard.add(new JLabel("Inscritos: " + monitoria.getLocal().getInscritos()));
+                monitoriaCard.add(new JLabel("Capacidade: " + monitoria.getLocal().getCapacidade()));
+                monitoriaCard.add(new JLabel("Monitor(a): " + MonitorDao.getMonitorId(monitoria.getIdMonitor())));
+
+                monitoriaCard.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // Deseleciona o cartão previamente selecionado, se existir
+                        if (selectedCard != null) {
+                            selectedCard.setBorder(BorderFactory.createLineBorder(Color.decode("#C6E2FF"), 5));
+                            selectedCard.setBackground(Color.WHITE);
+                        }
+
+                        // Seleciona o cartão clicado
+                        monitoriaCard.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+                        monitoriaCard.setBackground(Color.decode("#C6E2FF"));
+
+                        // Armazena a monitoria e o cartão selecionados
+                        selectedMonitoria[0] = monitoria;
+                        selectedCard = monitoriaCard;
+                    }
+                });
+
+                // Adiciona o painel da monitoria ao painel principal
+                gbc.gridx = column;
+                gbc.gridy = row;
+                monitoriaPanel.add(monitoriaCard, gbc);
+
+                column++;
+                if (column >= 4) { // Limita a 4 colunas
+                    column = 0;
+                    row++;
+                }
+            }
+
+            // Adiciona o painel com as monitorias ao painel principal
+            JScrollPane scrollPane = new JScrollPane(monitoriaPanel);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
             rightPanel.add(scrollPane, BorderLayout.CENTER);
-            rightPanel.revalidate();
-            rightPanel.repaint();
 
-            JPanel bottomPanel = new JPanel();
-            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-
+            // Painel inferior para os botões
+            JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             addButton(bottomPanel, "Criar Monitoria", e -> controller.adicionarMonitoria());
-            addButton(bottomPanel, "Excluir Monitoria", e -> controller.excluirMonitoria());
+            addButton(bottomPanel, "Excluir Monitoria", e -> {
+                try {
+                    controller.excluirMonitoria(selectedMonitoria[0]);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
             rightPanel.revalidate();
@@ -118,115 +167,6 @@ public class SupervisorView extends BasePanel {
         });
     }
 
-    public void mostrarMonitores(List<Monitor> monitores) {
-        String[] columnNames = {"Matrícula", "Nome", "E-mail"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        for (Monitor monitor : monitores) {
-            Object[] row = {monitor.getMatricula(), monitor.getNome(), monitor.getEmail()};
-            tableModel.addRow(row);
-        }
-
-        JTable table = new JTable(tableModel);
-        configureTable(table);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        SwingUtilities.invokeLater(() -> {
-            rightPanel.removeAll();
-            rightPanel.add(scrollPane, BorderLayout.CENTER);
-            rightPanel.revalidate();
-            rightPanel.repaint();
-
-            JPanel bottomPanel = new JPanel();
-            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-            addButton(bottomPanel, "Promover Monitor", e -> controller.promoverMonitor());
-            addButton(bottomPanel, "Excluir Monitor", e -> controller.excluirMonitor());
-
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-            rightPanel.revalidate();
-            rightPanel.repaint();
-        });
-    }
-
-    public void mostrarDisciplinas(List<Disciplina> disciplinas) {
-        String[] columnNames = {"Código", "Disciplína"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        for (Disciplina disciplina : disciplinas) {
-            Object[] row = {
-                    disciplina.getCodigo(),
-                    disciplina.getNome()
-            };
-            tableModel.addRow(row);
-        }
-
-        JTable table = new JTable(tableModel);
-        configureTable(table);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        SwingUtilities.invokeLater(() -> {
-            rightPanel.removeAll();
-            rightPanel.add(scrollPane, BorderLayout.CENTER);
-            rightPanel.revalidate();
-            rightPanel.repaint();
-
-            JPanel bottomPanel = new JPanel();
-            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-            addButton(bottomPanel, "Adicionar Disciplina", e -> controller.adicionarMonitoria());
-            addButton(bottomPanel, "Excluir Disciplína", e -> controller.excluirMonitoria());
-
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-            rightPanel.revalidate();
-            rightPanel.repaint();
-        });
-    }
-
-    public void mostrarLocais(List<Local> locais) {
-        String[] columnNames = {"Código", "Sala", "Capacidade", "Inscritos"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        for (Local disciplina : locais) {
-            Object[] row = {
-                    disciplina.getId(),
-                    disciplina.getSala(),
-                    disciplina.getCapacidade(),
-                    disciplina.getInscritos()
-            };
-            tableModel.addRow(row);
-        }
-
-        JTable table = new JTable(tableModel);
-        configureTable(table);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        SwingUtilities.invokeLater(() -> {
-            rightPanel.removeAll();
-            rightPanel.add(scrollPane, BorderLayout.CENTER);
-            rightPanel.revalidate();
-            rightPanel.repaint();
-
-            JPanel bottomPanel = new JPanel();
-            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-            addButton(bottomPanel, "Adicionar Local", e -> controller.adicionarMonitoria());
-            addButton(bottomPanel, "Excluir Local", e -> controller.excluirMonitoria());
-
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
-            rightPanel.revalidate();
-            rightPanel.repaint();
-        });
-    }
 
 
     public void adicionarMonitoria() {
@@ -302,7 +242,7 @@ public class SupervisorView extends BasePanel {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
-                   Disciplina disciplina = new Disciplina(disciplinaSelecionada.getCodigo(), disciplinaSelecionada.getNome());
+                   Disciplina disciplina = new Disciplina(disciplinaSelecionada.getNome(), disciplinaSelecionada.getCodigo());
                     controller.criarMonitoriaCon(disciplina, diaSelecionado, horarioSelecionado, salaSelecionada, monitorSelecionado);
                     JOptionPane.showMessageDialog(frame, "Monitoria adicionada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     frame.dispose(); // Fecha a janela após salvar
@@ -321,7 +261,117 @@ public class SupervisorView extends BasePanel {
         frame.setVisible(true);
     }
 
+    public void mostrarMonitores(List<Monitor> monitores) {
+        String[] columnNames = {"Matrícula", "Nome", "E-mail"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
+        for (Monitor monitor : monitores) {
+            Object[] row = {monitor.getMatricula(), monitor.getNome(), monitor.getEmail()};
+            tableModel.addRow(row);
+        }
+
+        JTable table = new JTable(tableModel);
+        configureTable(table);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        SwingUtilities.invokeLater(() -> {
+            rightPanel.removeAll();
+            rightPanel.add(scrollPane, BorderLayout.CENTER);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+
+            JPanel bottomPanel = new JPanel();
+            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+            addButton(bottomPanel, "Promover Monitor", e -> controller.promoverMonitor());
+            addButton(bottomPanel, "Excluir Monitor", e -> controller.excluirMonitor());
+
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
+    }
+
+    public void mostrarDisciplinas(List<Disciplina> disciplinas) {
+
+        String[] columnNames = {"Código", "Disciplína"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        for (Disciplina disciplina : disciplinas) {
+            Object[] row = {
+                    disciplina.getCodigo(),
+                    disciplina.getNome()
+            };
+            tableModel.addRow(row);
+        }
+
+        JTable table = new JTable(tableModel);
+        configureTable(table);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        SwingUtilities.invokeLater(() -> {
+            rightPanel.removeAll();
+            rightPanel.add(scrollPane, BorderLayout.CENTER);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+
+            JPanel bottomPanel = new JPanel();
+            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+            addButton(bottomPanel, "Adicionar Disciplina", e -> controller.adicionarMonitoria());
+            /*addButton(bottomPanel, "Excluir Disciplína");*/
+
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
+    }
+
+    public void mostrarLocais(List<Local> locais) {
+
+        String[] columnNames = {"Código", "Sala", "Capacidade", "Inscritos"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        for (Local disciplina : locais) {
+            Object[] row = {
+                    disciplina.getId(),
+                    disciplina.getSala(),
+                    disciplina.getCapacidade(),
+                    disciplina.getInscritos()
+            };
+            tableModel.addRow(row);
+        }
+
+        JTable table = new JTable(tableModel);
+        configureTable(table);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        SwingUtilities.invokeLater(() -> {
+            rightPanel.removeAll();
+            rightPanel.add(scrollPane, BorderLayout.CENTER);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+
+            JPanel bottomPanel = new JPanel();
+            bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+            addButton(bottomPanel, "Adicionar Local", e -> controller.adicionarMonitoria());
+            /*addButton(bottomPanel, "Excluir Local", e -> controller.excluirMonitoria());*/
+
+            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
+            rightPanel.revalidate();
+            rightPanel.repaint();
+        });
+    }
 
     private void configureTable(JTable table) {
         table.setFillsViewportHeight(true);
