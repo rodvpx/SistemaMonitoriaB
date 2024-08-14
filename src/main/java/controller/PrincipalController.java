@@ -2,12 +2,12 @@ package controller;
 
 import dao.UsuarioDao;
 import model.*;
-import view.LoginView;
-import view.PrincipalView;
-import view.CadastroView;
+import view.*;
 
 import javax.swing.*;
 import java.sql.SQLException;
+
+import static dao.UsuarioDao.validacao;
 
 public class PrincipalController {
 
@@ -17,6 +17,11 @@ public class PrincipalController {
     public PrincipalController(PrincipalView principalView, JFrame principalFrame) {
         this.principalView = principalView;
         this.principalFrame = principalFrame;
+        inicializar();
+    }
+
+    public PrincipalController(PrincipalView principalView) {
+        this.principalView = principalView;
         inicializar();
     }
 
@@ -55,7 +60,6 @@ public class PrincipalController {
         loginView.getBotaoVoltar().addActionListener(e -> loginFrame.dispose());
     }
 
-
     private void validarLogin(String email, String senha) throws SQLException {
         LoginResult result = UsuarioDao.login(email, senha);
         if (result != null) {
@@ -71,7 +75,10 @@ public class PrincipalController {
                     break;
                 case "A":
                     Aluno aluno = (Aluno) usuario;
-                    // Abrir a tela do aluno
+                    AlunoView viewAluno = new AlunoView();
+                    AlunoController controllerAluno = new AlunoController(viewAluno);
+                    viewAluno.setVisible(true);
+                    fecharTelaPrincipal();
                     break;
                 case "M":
                     Monitor monitor = (Monitor) usuario;
@@ -83,10 +90,8 @@ public class PrincipalController {
         }
     }
 
-
     private void abrirCadastroView() {
         CadastroView cadastroView = new CadastroView();
-        CadastroController cadastroController = new CadastroController(cadastroView); // Adiciona o controlador
 
         JFrame cadastroFrame = new JFrame("Cadastro de Usuário");
         cadastroFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -95,8 +100,57 @@ public class PrincipalController {
         cadastroFrame.pack();
         cadastroFrame.setLocationRelativeTo(null); // Centraliza a janela
         cadastroFrame.setVisible(true);
+
+        cadastroView.getBotaoCadastrar().addActionListener(e -> {
+            try {
+                cadastrar(cadastroView);
+                cadastroFrame.dispose(); // Fechar a janela de cadastro após o cadastro bem-sucedido
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        cadastroView.getBotaoVoltar().addActionListener(e -> cadastroFrame.dispose());
     }
 
+    private void cadastrar(CadastroView cadastroView) throws SQLException {
+        String matricula = cadastroView.getMatricula();
+        String nome = cadastroView.getNome();
+        String email = cadastroView.getEmail();
+        String tipo = cadastroView.getTipo();
+        String senha = cadastroView.getSenha();
+
+        // Validar dados
+        boolean dadosValidos = validacao(matricula, email, tipo);
+        if (!dadosValidos) {
+            JOptionPane.showMessageDialog(null, "Dados inválidos. Verifique matrícula e e-mail.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Se os dados forem válidos, continue com o cadastro
+        if (UsuarioDao.cadastrarNovoUsuario(matricula, nome, email, tipo, senha)) {
+            JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+            try {
+                if (tipo.equals("A")) {
+                    Aluno alu = new Aluno(matricula, nome, email, senha);
+                    AlunoView viewAluno = new AlunoView();
+                    AlunoController controllerAluno = new AlunoController(viewAluno);
+                    viewAluno.setVisible(true);
+                    fecharTelaPrincipal();
+                } else if (tipo.equals("S")) {
+                    Supervisor sup = new Supervisor(matricula, nome, email, senha);
+                    SupervisorController controller = new SupervisorController(sup, this);
+                    controller.mostrarView();
+                    fecharTelaPrincipal();
+                }
+                fecharTelaPrincipal();
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar abrir a tela: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
     public void mostrarPrincipalView() {
         if (principalFrame != null) {
@@ -109,5 +163,4 @@ public class PrincipalController {
             principalFrame.dispose();
         }
     }
-
 }

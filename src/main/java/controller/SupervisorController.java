@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.List;
 
 public class SupervisorController implements ActionListener {
 
@@ -89,12 +90,25 @@ public class SupervisorController implements ActionListener {
         view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
     }
 
-    public void promoverMonitor() {
-        // Implementar lógica para promover monitor
+    public void promoverAluno(String matricula) throws SQLException {
+       Integer idAluno = AlunoDao.obterIdAluno(matricula);
+        if(AlunoDao.promoverAluno(idAluno)){
+            JOptionPane.showMessageDialog(view, "Aluno promovido com sucesso!");
+            view.mostrarMonitores(MonitorDao.mostrarMonitores());
+        }else{
+            JOptionPane.showMessageDialog(view, "Erro ao promover aluno!");
+        }
+
     }
 
-    public void excluirMonitor() {
-        // Implementar lógica para excluir monitor
+    public void excluirMonitor(String matricula) throws SQLException {
+        if(MonitorDao.excluirMonitor(matricula)){
+            JOptionPane.showMessageDialog(view, "Monitor excluido com sucesso!");
+            view.mostrarMonitores(MonitorDao.mostrarMonitores());
+        }else{
+            JOptionPane.showMessageDialog(view, "Erro ao excluir monitor!");
+        }
+
     }
 
     public void adicionarMonitoria() {

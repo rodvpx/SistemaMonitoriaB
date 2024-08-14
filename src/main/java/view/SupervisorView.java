@@ -1,5 +1,6 @@
 package view;
 
+import dao.AlunoDao;
 import dao.DisciplinaDao;
 import dao.LocalDao;
 import dao.MonitorDao;
@@ -167,8 +168,6 @@ public class SupervisorView extends BasePanel {
         });
     }
 
-
-
     public void adicionarMonitoria() {
 
         JFrame frame = new JFrame("Adicionar Monitoria");
@@ -284,16 +283,84 @@ public class SupervisorView extends BasePanel {
 
             JPanel bottomPanel = new JPanel();
             bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            rightPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-            addButton(bottomPanel, "Promover Monitor", e -> controller.promoverMonitor());
-            addButton(bottomPanel, "Excluir Monitor", e -> controller.excluirMonitor());
+            // Botão Promover Monitor
+            addButton(bottomPanel, "Promover Monitor", e -> {
+                List<Aluno> alunos = AlunoDao.getAlunos4Monitor(); // Este método deve retornar a lista de alunos que podem ser promovidos
+                abrirPromocaoMonitorView(alunos);
+            });
+
+            // Botão Excluir Monitor
+            addButton(bottomPanel, "Excluir Monitor", e -> {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    String matriculaMonitor = (String) tableModel.getValueAt(selectedRow, 0); // Obtém a matrícula da coluna 0
+                    try {
+                        controller.excluirMonitor(matriculaMonitor);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(rightPanel, "Por favor, selecione um monitor para excluir.");
+                }
+            });
 
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
             rightPanel.revalidate();
             rightPanel.repaint();
         });
     }
+
+    private void abrirPromocaoMonitorView(List<Aluno> alunos) {
+        // Criar a janela
+        JFrame frame = new JFrame("Promover Aluno a Monitor");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(400, 400);
+        frame.setLocationRelativeTo(null);
+
+        // Criar o modelo da tabela para listar os alunos
+        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Matrícula", "Nome"}, 0);
+
+        for (Aluno aluno : alunos) {
+            String matricula = aluno.getMatricula(); // Supondo que há um método getMatricula() em Aluno
+            String nome = aluno.getNome();
+            tableModel.addRow(new Object[]{matricula, nome});
+        }
+
+        // Criar a tabela e a área de rolagem
+        JTable table = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(table);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Criar o botão de promover
+        JButton promoverButton = new JButton("Promover");
+        promoverButton.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0) {
+                String matriculaAluno = (String) tableModel.getValueAt(selectedRow, 0); // Pega a matrícula da coluna 1
+                try {
+                    controller.promoverAluno(matriculaAluno); // Passa a matrícula para promoverAluno
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                frame.dispose(); // Fecha a janela após a promoção
+            } else {
+                JOptionPane.showMessageDialog(frame, "Por favor, selecione um aluno para promover.");
+            }
+        });
+
+        frame.setVisible(true);
+
+    // Adicionar o botão à parte inferior da janela
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(promoverButton);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Mostrar a janela
+        frame.setVisible(true);
+    }
+
 
     public void mostrarDisciplinas(List<Disciplina> disciplinas) {
 
