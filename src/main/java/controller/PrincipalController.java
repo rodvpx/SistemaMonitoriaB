@@ -86,13 +86,17 @@ public class PrincipalController {
 
     private void abrirCadastroView() {
         CadastroView cadastroView = new CadastroView();
+        CadastroController cadastroController = new CadastroController(cadastroView); // Adiciona o controlador
+
         JFrame cadastroFrame = new JFrame("Cadastro de Usuário");
         cadastroFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        util.IconUtil.setIcon(cadastroFrame);
         cadastroFrame.add(cadastroView);
         cadastroFrame.pack();
         cadastroFrame.setLocationRelativeTo(null); // Centraliza a janela
         cadastroFrame.setVisible(true);
     }
+
 
     public void mostrarPrincipalView() {
         if (principalFrame != null) {
