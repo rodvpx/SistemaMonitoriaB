@@ -11,6 +11,7 @@ public class StyleButton extends JButton {
     private static final int BORDER_RADIUS = 32; // Raio das bordas arredondadas
     private Color normalColor = Color.WHITE;
     private Color hoverColor = Color.decode("#C6E2FF");
+    private Color selectedColor = Color.GRAY; // Cor de destaque
 
     public StyleButton(String txt) {
         super(txt);
@@ -19,7 +20,7 @@ public class StyleButton extends JButton {
     }
 
     private void configurarEstilo() {
-        setBackground(Color.WHITE);
+        setBackground(normalColor);
         setForeground(Color.BLACK);
         setFont(new Font("Arial", Font.PLAIN, 20));
         setFocusPainted(false);
@@ -32,14 +33,16 @@ public class StyleButton extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                setBackground(hoverColor);
-                repaint();
+                if (getBackground() != selectedColor) { // Ignora hover se estiver selecionado
+                    setBackground(hoverColor);
+                }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                setBackground(normalColor);
-                repaint();
+                if (getBackground() != selectedColor) { // Ignora hover se estiver selecionado
+                    setBackground(normalColor);
+                }
             }
         });
     }
@@ -53,7 +56,9 @@ public class StyleButton extends JButton {
         int height = getHeight();
 
         // Pintar o fundo do botão
-        if (getModel().isArmed()) {
+        if (getBackground() == selectedColor) {
+            g2.setColor(selectedColor);
+        } else if (getModel().isArmed()) {
             g2.setColor(getBackground().darker());
         } else {
             g2.setColor(getBackground());
@@ -70,4 +75,11 @@ public class StyleButton extends JButton {
         super.paintComponent(g);
     }
 
+    public void setSelected(boolean selected) {
+        if (selected) {
+            setBackground(selectedColor);
+        } else {
+            setBackground(normalColor);
+        }
+    }
 }

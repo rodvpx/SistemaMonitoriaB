@@ -75,9 +75,8 @@ public class PrincipalController {
                     break;
                 case "A":
                     Aluno aluno = (Aluno) usuario;
-                    AlunoView viewAluno = new AlunoView();
-                    AlunoController controllerAluno = new AlunoController(viewAluno);
-                    viewAluno.setVisible(true);
+                    AlunoController controllerAluno = new AlunoController(aluno, this);
+                    controllerAluno.mostrarView();
                     fecharTelaPrincipal();
                     break;
                 case "M":
@@ -134,9 +133,8 @@ public class PrincipalController {
             try {
                 if (tipo.equals("A")) {
                     Aluno alu = new Aluno(matricula, nome, email, senha);
-                    AlunoView viewAluno = new AlunoView();
-                    AlunoController controllerAluno = new AlunoController(viewAluno);
-                    viewAluno.setVisible(true);
+                    AlunoController controllerAluno = new AlunoController(alu, this);
+                    controllerAluno.mostrarView();
                     fecharTelaPrincipal();
                 } else if (tipo.equals("S")) {
                     Supervisor sup = new Supervisor(matricula, nome, email, senha);

@@ -2,9 +2,11 @@ package controller;
 
 import dao.*;
 import model.*;
+import view.StyleButton;
 import view.SupervisorView;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -15,6 +17,7 @@ public class SupervisorController implements ActionListener {
     private PrincipalController principalController;
     private SupervisorView view;
     private Supervisor supervisor;
+    private JButton botaoSelecionado;
 
     public SupervisorController(Supervisor supervisor, PrincipalController principalController) {
         this.supervisor = supervisor;
@@ -23,7 +26,7 @@ public class SupervisorController implements ActionListener {
     }
 
     public void mostrarView() {
-        JFrame frame = new JFrame("Supervisor");
+        JFrame frame = new JFrame("SISTEMA MONITORIA - Painel do Supervisor");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         util.IconUtil.setIcon(frame);
         frame.add(view);
@@ -32,10 +35,15 @@ public class SupervisorController implements ActionListener {
         frame.setVisible(true);
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
+        // Reverter o estilo do botão selecionado, se houver
+        if (botaoSelecionado != null) {
+            ((StyleButton) botaoSelecionado).setSelected(false);
+        }
+
         String actionCommand = e.getActionCommand();
+
         switch (actionCommand) {
             case "Monitorias":
                 view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
@@ -65,12 +73,21 @@ public class SupervisorController implements ActionListener {
                 if (frame != null) {
                     frame.dispose(); // Fecha a tela do supervisor
                 }
+                // Reverter o estilo do botão selecionado ao fechar a tela
+                if (botaoSelecionado != null) {
+                    ((StyleButton) botaoSelecionado).setSelected(false);
+                }
                 break;
 
             default:
                 JOptionPane.showMessageDialog(view, "Ação não reconhecida: " + actionCommand, "Erro", JOptionPane.ERROR_MESSAGE);
                 break;
         }
+
+        // Destacar o botão clicado
+        JButton botao = (JButton) e.getSource();
+        botaoSelecionado = botao;
+        ((StyleButton) botaoSelecionado).setSelected(true);
     }
 
     public void criarMonitoriaCon(Disciplina disciplina, String dia, String horarioStr, String salaNome, String monitorNome) throws SQLException {

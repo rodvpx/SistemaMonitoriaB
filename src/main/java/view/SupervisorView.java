@@ -242,7 +242,7 @@ public class SupervisorView extends BasePanel {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
-                   Disciplina disciplina = new Disciplina(disciplinaSelecionada.getNome(), disciplinaSelecionada.getCodigo());
+                    Disciplina disciplina = new Disciplina(disciplinaSelecionada.getNome(), disciplinaSelecionada.getCodigo());
                     controller.criarMonitoriaCon(disciplina, diaSelecionado, horarioSelecionado, salaSelecionada, monitorSelecionado);
                     JOptionPane.showMessageDialog(frame, "Monitoria adicionada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     frame.dispose(); // Fecha a janela após salvar
@@ -352,7 +352,7 @@ public class SupervisorView extends BasePanel {
 
         frame.setVisible(true);
 
-    // Adicionar o botão à parte inferior da janela
+        // Adicionar o botão à parte inferior da janela
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(promoverButton);
@@ -361,7 +361,6 @@ public class SupervisorView extends BasePanel {
         // Mostrar a janela
         frame.setVisible(true);
     }
-
 
     public void mostrarDisciplinas(List<Disciplina> disciplinas) {
 
@@ -434,7 +433,7 @@ public class SupervisorView extends BasePanel {
                 if (selectedRow >= 0) {
                     String codigoDisciplina = (String) tableModel.getValueAt(selectedRow, 0); // Obtém o código da disciplina da coluna 0
                     try {
-                        controller.excluirDisciplina( codigoDisciplina); // Passe o código para exclusão
+                        controller.excluirDisciplina(codigoDisciplina); // Passe o código para exclusão
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -451,7 +450,6 @@ public class SupervisorView extends BasePanel {
             rightPanel.repaint();
         });
     }
-
 
     public void mostrarLocais(List<Local> locais) {
 
@@ -551,7 +549,6 @@ public class SupervisorView extends BasePanel {
         });
     }
 
-
     private void configureTable(JTable table) {
         table.setFillsViewportHeight(true);
         table.setBorder(BorderFactory.createLineBorder(Color.decode("#3176FB"), 2));
@@ -567,13 +564,12 @@ public class SupervisorView extends BasePanel {
         }
     }
 
-    private void addButton(JPanel panel, String label, ActionListener listener) {
+    public static void addButton(JPanel panel, String label, ActionListener listener) {
         StyleButton button = new StyleButton(label);
         button.addActionListener(listener);
+        button.setFont(new Font("Arial", Font.PLAIN, 15));
+        button.setPreferredSize(new Dimension(200, 50)); // Ajuste o tamanho do botão aqui
         panel.add(button);
     }
-
-
-
 }
 

@@ -1,9 +1,6 @@
 package view;
 
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import javax.swing.*;
 
 public class PrincipalView extends BasePanel {
@@ -26,33 +23,48 @@ public class PrincipalView extends BasePanel {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
 
-        // Label de título
         JLabel tituloLabel = new JLabel("SISTEMA DE MONITORIA");
         tituloLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        tituloLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.PAGE_START; // Centraliza horizontalmente
         add(tituloLabel, gbc);
+
+        // Carregar e redimensionar a imagem
+        ImageIcon imagemIcon = new ImageIcon(getClass().getResource("/Img/icon.png")); // Ajuste o caminho para sua imagem
+        Image imagem = imagemIcon.getImage(); // Obtém a imagem
+        Image imagemRedimensionada = imagem.getScaledInstance(185, 185, Image.SCALE_SMOOTH); // Redimensiona a imagem
+        imagemIcon = new ImageIcon(imagemRedimensionada); // Cria um novo ImageIcon com a imagem redimensionada
+
+        JLabel imagemLabel = new JLabel(imagemIcon);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.CENTER; // Centraliza horizontalmente
+        add(imagemLabel, gbc);
 
         // Botão Login
         botaoLogin = new StyleButton("Login"); // Atribui ao campo da classe
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridwidth = 1;
         add(botaoLogin, gbc);
 
         // Botão Cadastro
         botaoCadastro = new StyleButton("Cadastro"); // Atribui ao campo da classe
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         add(botaoCadastro, gbc);
 
         // Botão Sair
         botaoSair = new StyleButton("Sair"); // Atribui ao campo da classe
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         add(botaoSair, gbc);
     }
+
 
     public StyleButton getBotaoLogin() {
         return botaoLogin;

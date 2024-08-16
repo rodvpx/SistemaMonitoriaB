@@ -5,6 +5,7 @@ import model.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import static factory.conexao.getConexao;
 
 public class MonitoriaDao {
@@ -20,7 +21,8 @@ public class MonitoriaDao {
                 "JOIN local l ON m.local = l.id " +
                 "JOIN horario h ON m.horario = h.id " +
                 "LEFT JOIN inscricao_monitoria im ON m.id = im.id_monitoria " +
-                "GROUP BY m.id;";
+                "GROUP BY m.id, d.nome, d.codigo, l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, m.id_monitor, m.id_supervisor " +
+                "ORDER BY d.nome;";
 
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql);
@@ -46,7 +48,6 @@ public class MonitoriaDao {
 
         return monitorias;
     }
-
 
     public static void criarMonitoria(Disciplina disciplina, Horario horario, Local local, int idMonitor, int idSupervisor) throws SQLException {
         // Conexão única para garantir consistência transacional
@@ -105,13 +106,4 @@ public class MonitoriaDao {
         }
     }
 
-
-
-    public void inscreverAluno(Aluno aluno) {
-        // Implementar lógica para inscrever aluno
-    }
-
-    public void desinscreverAluno(Aluno aluno) {
-        // Implementar lógica para desinscrever aluno
-    }
 }
