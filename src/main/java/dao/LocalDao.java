@@ -13,6 +13,39 @@ import static factory.conexao.getConexao;
 
 public class LocalDao {
 
+    public static boolean adicionaLocal(Local local) throws SQLException {
+
+        String sql = "insert into local (sala, capacidade) values(?,?)";
+
+        try(Connection conn = getConexao();
+        PreparedStatement sta = conn.prepareStatement(sql)){
+            sta.setString(1, local.getSala());
+            sta.setInt(2, local.getCapacidade());
+            sta.executeUpdate();
+            return true;
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean excluirLocal(int id) throws SQLException {
+        String sql = "DELETE FROM local WHERE id = ?";
+
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+            sta.setInt(1, id);
+            int affectedRows = sta.executeUpdate(); // Chama executeUpdate apenas uma vez
+
+            // Retorna true se pelo menos uma linha foi afetada (excluída)
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
     public static Local obterLocal(String nomeSala) {
         String sql = "SELECT id, sala, capacidade, inscritos FROM local WHERE sala = ?";
         try (Connection conn = getConexao();
@@ -51,7 +84,7 @@ public class LocalDao {
         return salas.toArray(new String[0]); // Convertendo a lista para um array de Strings
     }
 
-    private boolean verificarLocalExiste(String sala) throws SQLException {
+    public static boolean verificarLocalExiste(String sala) throws SQLException {
         String sql = "Select count(*) from local where sala = ?";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -70,7 +103,7 @@ public class LocalDao {
 
         List<Local> locais = new ArrayList<>();
 
-        String sql = "SELECT id, sala, capacidade, inscritos FROM local order by id asc ";
+        String sql = "SELECT id, sala, capacidade, inscritos FROM local order by sala asc ";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

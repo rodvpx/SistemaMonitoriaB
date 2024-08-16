@@ -13,19 +13,41 @@ import static factory.conexao.getConexao;
 
 public class DisciplinaDao {
 
-    public static int obterCodigoDisciplina(String nomeDisciplina) {
-        String sql = "SELECT codigo FROM disciplina WHERE nome = ?";
-        try (Connection conn = getConexao();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nomeDisciplina);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("codigo");
-            }
-        } catch (SQLException e) {
+    public static boolean adicionarDisciplina(Disciplina disciplina) throws SQLException {
+
+        String sql = "insert into disciplina values(?,?,?)";
+
+        try(Connection conn = getConexao();
+        PreparedStatement sta = conn.prepareStatement(sql)){
+            sta.setString(1, disciplina.getNome());
+            sta.setInt(2, Integer.parseInt(disciplina.getCodigo()));
+            sta.setString(3, "*");
+            sta.executeUpdate();
+            return true;
+        }catch (SQLException e){
             e.printStackTrace();
         }
-        return -1;
+        return false;
+    }
+    public static boolean excluirDisciplina(String codigo) throws SQLException {
+
+        String sql = "DELETE FROM disciplina WHERE codigo = ?";
+
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+
+            sta.setInt(1, Integer.parseInt(codigo));
+
+            int affectedRows = sta.executeUpdate();
+
+            // Retorna true se pelo menos uma linha foi afetada (excluída)
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Em produção, considere usar logs
+        }
+
+        return false;
     }
 
     public static Disciplina[] getDisciplinas() {
@@ -51,7 +73,7 @@ public class DisciplinaDao {
 
 
 
-    private boolean verificarCodigoExistente(String codigo) throws SQLException {
+    public static boolean verificarCodigoExistente(String codigo) throws SQLException {
         String sql = "SELECT COUNT(*) FROM disciplina WHERE codigo = ?";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -68,7 +90,7 @@ public class DisciplinaDao {
      public static List<Disciplina> mostrarDisciplina() throws SQLException {
         // Consultar as disciplinas do banco de dados
         List<Disciplina> disciplinas = new ArrayList<>();
-        String sql = "SELECT codigo, nome FROM disciplina ORDER BY codigo ASC";
+        String sql = "SELECT codigo, nome FROM disciplina ORDER BY nome ASC";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

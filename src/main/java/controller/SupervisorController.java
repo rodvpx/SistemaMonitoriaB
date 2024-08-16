@@ -114,4 +114,48 @@ public class SupervisorController implements ActionListener {
     public void adicionarMonitoria() {
         view.adicionarMonitoria();
     }
+
+    public void adicionarDisciplina(Disciplina disciplina) throws SQLException {
+
+        if(DisciplinaDao.verificarCodigoExistente(disciplina.getCodigo())){
+            JOptionPane.showMessageDialog(view, "Erro codigo já existente");
+            view.mostrarDisciplinas(DisciplinaDao.mostrarDisciplina());
+        } else {
+            DisciplinaDao.adicionarDisciplina(disciplina);
+            view.mostrarDisciplinas(DisciplinaDao.mostrarDisciplina());
+
+        }
+
+    }
+
+    public void excluirDisciplina(String codigo) throws SQLException {
+
+        if(DisciplinaDao.excluirDisciplina(codigo)){
+            JOptionPane.showMessageDialog(view, "Disciplina excluido com sucesso!");
+            view.mostrarDisciplinas(DisciplinaDao.mostrarDisciplina());
+        }else {
+            JOptionPane.showMessageDialog(view, "Erro ao excluir disciplina!");
+        }
+    }
+
+    public void adicionarLocal(Local local) throws SQLException {
+
+        if(LocalDao.verificarLocalExiste(local.getSala())){
+            JOptionPane.showMessageDialog(view, "Erro local já existente");
+            view.mostrarLocais(LocalDao.mostrarLocal());
+        }else {
+            LocalDao.adicionaLocal(local);
+            view.mostrarLocais(LocalDao.mostrarLocal());
+        }
+    }
+
+    public void excluirLocal(int id) throws SQLException {
+
+        if(LocalDao.excluirLocal(id)){
+            JOptionPane.showMessageDialog(view, "Local excluido com sucesso!");
+            view.mostrarLocais(LocalDao.mostrarLocal());
+        }else {
+            JOptionPane.showMessageDialog(view, "Erro ao excluir local!");
+        }
+    }
 }

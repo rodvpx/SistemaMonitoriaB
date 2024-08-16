@@ -6,7 +6,14 @@ public class Local {
     private int inscritos;
     private int capacidade;
 
-    public Local() {}
+    public Local(){
+
+    }
+
+    public Local(String sala, int capacidade) {
+        this.sala = sala;
+        this.capacidade = capacidade;
+    }
     public Local(int id, String sala, int inscritos, int capacidade) {
         this.id = id;
         this.sala = sala;

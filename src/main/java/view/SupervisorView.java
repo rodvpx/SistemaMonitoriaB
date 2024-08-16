@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -364,7 +365,7 @@ public class SupervisorView extends BasePanel {
 
     public void mostrarDisciplinas(List<Disciplina> disciplinas) {
 
-        String[] columnNames = {"Código", "Disciplína"};
+        String[] columnNames = {"Código", "Disciplina"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
         for (Disciplina disciplina : disciplinas) {
@@ -391,8 +392,59 @@ public class SupervisorView extends BasePanel {
             bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-            addButton(bottomPanel, "Adicionar Disciplina", e -> controller.adicionarMonitoria());
-            /*addButton(bottomPanel, "Excluir Disciplína");*/
+            // Botão "Adicionar Disciplina" com uma janela de entrada
+            addButton(bottomPanel, "Adicionar Disciplina", e -> {
+                JTextField codigoField = new JTextField(10);
+                JTextField nomeField = new JTextField(10);
+
+                JPanel panel = new JPanel(new GridLayout(2, 2));
+                panel.add(new JLabel("Código:"));
+                panel.add(codigoField);
+                panel.add(new JLabel("Nome:"));
+                panel.add(nomeField);
+
+                int result = JOptionPane.showConfirmDialog(
+                        rightPanel, panel, "Adicionar Disciplina", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+                );
+
+                if (result == JOptionPane.OK_OPTION) {
+                    String codigo = codigoField.getText().trim();
+                    String nome = nomeField.getText().trim();
+
+                    if (!codigo.isEmpty() && !nome.isEmpty()) {
+                        Disciplina novaDisciplina = new Disciplina(nome, codigo);
+                        try {
+                            controller.adicionarDisciplina(novaDisciplina);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        // Atualiza a tabela
+                        disciplinas.add(novaDisciplina);
+                        tableModel.addRow(new Object[]{codigo, nome});
+                    } else {
+                        JOptionPane.showMessageDialog(rightPanel, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+
+            // Botão "Excluir Disciplina"
+            addButton(bottomPanel, "Excluir Disciplina", e -> {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    String codigoDisciplina = (String) tableModel.getValueAt(selectedRow, 0); // Obtém o código da disciplina da coluna 0
+                    try {
+                        controller.excluirDisciplina( codigoDisciplina); // Passe o código para exclusão
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                    // Atualiza a tabela
+                    tableModel.removeRow(selectedRow);
+                } else {
+                    JOptionPane.showMessageDialog(rightPanel, "Por favor, selecione uma disciplina para excluir.");
+                }
+            });
 
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
             rightPanel.revalidate();
@@ -400,17 +452,18 @@ public class SupervisorView extends BasePanel {
         });
     }
 
+
     public void mostrarLocais(List<Local> locais) {
 
         String[] columnNames = {"Código", "Sala", "Capacidade", "Inscritos"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        for (Local disciplina : locais) {
+        for (Local local : locais) {
             Object[] row = {
-                    disciplina.getId(),
-                    disciplina.getSala(),
-                    disciplina.getCapacidade(),
-                    disciplina.getInscritos()
+                    local.getId(),
+                    local.getSala(),
+                    local.getCapacidade(),
+                    local.getInscritos()
             };
             tableModel.addRow(row);
         }
@@ -431,14 +484,73 @@ public class SupervisorView extends BasePanel {
             bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-            addButton(bottomPanel, "Adicionar Local", e -> controller.adicionarMonitoria());
-            /*addButton(bottomPanel, "Excluir Local", e -> controller.excluirMonitoria());*/
+            // Botão "Adicionar Local" com uma janela de entrada
+            addButton(bottomPanel, "Adicionar Local", e -> {
+                JTextField salaField = new JTextField(10);
+                JTextField capacidadeField = new JTextField(10);
+
+                JPanel panel = new JPanel(new GridLayout(2, 2));
+                panel.add(new JLabel("Sala:"));
+                panel.add(salaField);
+                panel.add(new JLabel("Capacidade:"));
+                panel.add(capacidadeField);
+
+                int result = JOptionPane.showConfirmDialog(
+                        rightPanel, panel, "Adicionar Local", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+                );
+
+                if (result == JOptionPane.OK_OPTION) {
+                    String sala = salaField.getText().trim();
+                    String capacidadeStr = capacidadeField.getText().trim();
+
+                    if (!sala.isEmpty() && !capacidadeStr.isEmpty()) {
+                        try {
+                            int capacidade = Integer.parseInt(capacidadeStr);
+                            Local novoLocal = new Local(sala, capacidade);
+                            controller.adicionarLocal(novoLocal);
+
+                            // Atualiza a tabela
+                            locais.add(novoLocal);
+                            tableModel.addRow(new Object[]{novoLocal.getId(), sala, capacidade, 0});
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(rightPanel, "Capacidade deve ser um número inteiro.", "Erro", JOptionPane.ERROR_MESSAGE);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(rightPanel, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+
+            addButton(bottomPanel, "Excluir Local", e -> {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    // Assume que a coluna do código é a primeira (índice 0)
+                    // Verifique o tipo de dados esperado para o código
+                    Object idObject = tableModel.getValueAt(selectedRow, 0); // Obtém o valor da coluna do código
+
+                    if (idObject instanceof Integer) {
+                        Integer id = (Integer) idObject; // Converte para Integer
+                        try {
+                            controller.excluirLocal(id);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(rightPanel, "Erro ao obter ID do local.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(rightPanel, "Por favor, selecione um local para excluir.");
+                }
+            });
 
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
             rightPanel.revalidate();
             rightPanel.repaint();
         });
     }
+
 
     private void configureTable(JTable table) {
         table.setFillsViewportHeight(true);
@@ -461,4 +573,7 @@ public class SupervisorView extends BasePanel {
         panel.add(button);
     }
 
+
+
 }
+
