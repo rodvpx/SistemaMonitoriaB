@@ -7,14 +7,14 @@ public class Disciplina {
     private Monitor monitor;
 
     // Construtor padrão
-    public Disciplina() {}
+    public Disciplina() {
+    }
 
     // Construtor com parâmetros
     public Disciplina(String nome, String codigo) {
         this.codigo = codigo;
         this.nome = nome;
     }
-
 
     public String getNome() {
         return nome;
@@ -36,5 +36,4 @@ public class Disciplina {
     public String toString() {
         return nome; // Sobrescreve toString() para exibir o nome da disciplina
     }
-
 }

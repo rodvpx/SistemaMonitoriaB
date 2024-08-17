@@ -13,9 +13,12 @@ import static factory.conexao.getConexao;
 
 public class MonitorDao {
 
-     public static List<Monitor> mostrarMonitores() {
+    public static List<Monitor> mostrarMonitores() {
+
         List<Monitor> monitores = new ArrayList<>();
+
         String sql = "SELECT * FROM usuario WHERE tipo = 'M' ORDER BY nome ASC";
+
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql);
              ResultSet rs = sta.executeQuery()) {
@@ -36,7 +39,9 @@ public class MonitorDao {
 
 
     public static int obterIdMonitor(String nomeMonitor) {
+
         String sql = "SELECT id FROM usuario WHERE nome = ?";
+
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nomeMonitor);
@@ -51,7 +56,9 @@ public class MonitorDao {
     }
 
     public static String[] getMonitores() {
+
         List<String> monitores = new ArrayList<>();
+
         String sql = "SELECT nome FROM usuario WHERE tipo = 'M' ORDER BY nome ASC";
 
         try (Connection conn = getConexao();
@@ -70,6 +77,7 @@ public class MonitorDao {
     }
 
     public static String getMonitorId(Integer id) {
+
         String nomeMonitor = null;
         String sql = "SELECT nome FROM usuario WHERE id = ? AND tipo = 'M'";
 
@@ -90,18 +98,19 @@ public class MonitorDao {
         return nomeMonitor;  // Retorna o nome do monitor ou null se não for encontrado
     }
 
-    public static boolean excluirMonitor(String matricula) throws SQLException{
-         String sql = "UPDATE usuario SET tipo = 'A' WHERE matricula = ?";
-         try (Connection conn = getConexao();
-         PreparedStatement sta = conn.prepareStatement(sql)) {
-             sta.setString(1, matricula);
-             int affectedRows = sta.executeUpdate();
+    public static boolean excluirMonitor(String matricula) throws SQLException {
 
-             // Verifica se a atualização afetou alguma linha
-             return affectedRows > 0;
-         }catch (SQLException ex) {
-             ex.printStackTrace();
-         }
-         return false;
+        String sql = "UPDATE usuario SET tipo = 'A' WHERE matricula = ?";
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
+            sta.setString(1, matricula);
+            int affectedRows = sta.executeUpdate();
+
+            // Verifica se a atualização afetou alguma linha
+            return affectedRows > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 }

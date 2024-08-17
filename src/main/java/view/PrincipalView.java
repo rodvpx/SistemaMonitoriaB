@@ -65,7 +65,6 @@ public class PrincipalView extends BasePanel {
         add(botaoSair, gbc);
     }
 
-
     public StyleButton getBotaoLogin() {
         return botaoLogin;
     }

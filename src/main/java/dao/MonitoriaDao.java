@@ -11,6 +11,7 @@ import static factory.conexao.getConexao;
 public class MonitoriaDao {
 
     public static List<Monitoria> buscarTodasMonitorias() {
+
         List<Monitoria> monitorias = new ArrayList<>();
 
         String sql = "SELECT d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, l.sala, l.capacidade, " +
@@ -51,6 +52,7 @@ public class MonitoriaDao {
 
 
     public static void criarMonitoria(Disciplina disciplina, Horario horario, Local local, int idMonitor, int idSupervisor) throws SQLException {
+
         // Conexão única para garantir consistência transacional
         try (Connection conn = getConexao()) {
             conn.setAutoCommit(false); // Iniciar transação
@@ -92,6 +94,7 @@ public class MonitoriaDao {
     }
 
     public static void excluirMonitoria(Monitoria monitoria) throws SQLException {
+
         String deleteInscricaoSql = "DELETE FROM inscricao_monitoria WHERE id_monitoria = ?";
         String deleteMonitoriaSql = "DELETE FROM monitoria WHERE id = ?";
 
@@ -126,6 +129,7 @@ public class MonitoriaDao {
 
 
     public static boolean editarMonitoria(Monitoria monitoria) throws SQLException {
+
         try (Connection conn = getConexao()) {
             conn.setAutoCommit(false); // Iniciar transação
 
@@ -179,6 +183,7 @@ public class MonitoriaDao {
     }
 
     public static int contarInscricoes(int idMonitoria) throws SQLException {
+
         String sql = "SELECT COUNT(*) FROM inscricao_monitoria WHERE id_monitoria = ?";
 
         try (Connection conn = getConexao();

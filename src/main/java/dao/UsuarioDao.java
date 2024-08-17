@@ -29,7 +29,9 @@ public class UsuarioDao {
 
 
     public static boolean cadastrarNovoUsuario(String matricula, String nome, String email, String tipo, String senha) throws SQLException {
+
         String sql = "INSERT INTO usuario (nome, email, senha, matricula, tipo) VALUES (?, ?, ?, ?, ?)";
+
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
 
@@ -49,7 +51,9 @@ public class UsuarioDao {
     }
 
     public static LoginResult login(String email, String senha) throws SQLException {
+
         String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
+
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
             sta.setString(1, email);
@@ -81,7 +85,9 @@ public class UsuarioDao {
     }
 
     public static boolean isMatriculaUnica(String matricula) throws SQLException {
+
         String query = "SELECT COUNT(*) FROM usuario WHERE matricula = ?";
+
         try (Connection conn = getConexao(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, matricula);
             ResultSet rs = stmt.executeQuery();
@@ -93,7 +99,9 @@ public class UsuarioDao {
     }
 
     public static boolean isEmailUnico(String email) throws SQLException {
+
         String query = "SELECT COUNT(*) FROM usuario WHERE email = ?";
+
         try (Connection conn = getConexao(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
@@ -103,5 +111,4 @@ public class UsuarioDao {
             return false;
         }
     }
-
 }

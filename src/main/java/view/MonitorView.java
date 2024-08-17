@@ -1,6 +1,5 @@
 package view;
 
-import controller.AlunoController;
 import controller.MonitorController;
 import dao.DisciplinaDao;
 import dao.MonitorDao;
@@ -9,7 +8,6 @@ import model.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;

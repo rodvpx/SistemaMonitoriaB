@@ -10,6 +10,7 @@ import static factory.conexao.getConexao;
 public class SupervisorDao {
 
     public static int obterIdSupervisor(String matricula) {
+
         String sql = "SELECT id FROM usuario WHERE matricula = ? AND tipo = 'S'";
         int idSupervisor = 0;
 

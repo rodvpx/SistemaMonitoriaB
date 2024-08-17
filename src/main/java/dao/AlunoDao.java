@@ -13,8 +13,6 @@ import static factory.conexao.getConexao;
 
 public class AlunoDao {
 
-    // Métodos específicos de Aluno
-
     public static List<Aluno> getAlunos4Monitor() {
 
         List<Aluno> alunos = new ArrayList<>();
@@ -35,6 +33,7 @@ public class AlunoDao {
     }
 
     public static int obterIdAluno(String matriculaAluno) {
+
         String sql = "SELECT id FROM usuario WHERE matricula = ?";
         try (Connection conn = getConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -53,6 +52,7 @@ public class AlunoDao {
 
 
     public static boolean promoverAluno(Integer id) throws SQLException {
+
         String sql = "UPDATE usuario SET tipo = 'M' WHERE id = ?";
 
         try (Connection conn = getConexao(); PreparedStatement sta = conn.prepareStatement(sql)) {
@@ -70,7 +70,9 @@ public class AlunoDao {
     }
 
     public static List<Monitoria> buscarMinhasMonitorias(int idAluno) throws SQLException {
+
         List<Monitoria> monitorias = new ArrayList<>();
+
         String sql = "SELECT m.id, d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, " +
                 "l.sala, l.capacidade, h.dia_semana, h.horas, " +
                 "m.id_monitor, m.id_supervisor, COUNT(im.id_aluno) AS total_inscritos " +
@@ -111,47 +113,8 @@ public class AlunoDao {
         return monitorias;
     }
 
-
-
-    public static Monitoria buscarPorId(int idMonitoria) throws SQLException {
-        Monitoria monitoria = null;
-
-        String sql = "SELECT d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, l.sala, l.capacidade, l.inscritos, " +
-                "h.dia_semana, h.horas, COUNT(im.id_aluno) AS total_inscritos, " +
-                "m.id AS monitoria_id, m.id_monitor, m.id_supervisor " +
-                "FROM monitoria m " +
-                "JOIN disciplina d ON m.disciplina = d.codigo " +
-                "JOIN local l ON m.local = l.id " +
-                "JOIN horario h ON m.horario = h.id " +
-                "LEFT JOIN inscricao_monitoria im ON m.id = im.id_monitoria " +
-                "WHERE m.id = ? " +
-                "GROUP BY m.id, d.nome, d.codigo, l.sala, l.capacidade, h.dia_semana, h.horas, m.id_monitor, m.id_supervisor;";
-
-        try (Connection conn = getConexao(); PreparedStatement sta = conn.prepareStatement(sql)) {
-            sta.setInt(1, idMonitoria);
-
-            try (ResultSet rs = sta.executeQuery()) {
-                if (rs.next()) {
-                    Disciplina disciplina = new Disciplina(rs.getString("disciplina_nome"), rs.getString("disciplina_codigo"));
-                    Local local = new Local(rs.getInt("monitoria_id"), rs.getString("sala"), rs.getInt("capacidade"));
-                    Horario horario = new Horario(rs.getString("dia_semana"), rs.getString("horas"));
-
-                    int idMonitor = rs.getInt("id_monitor");
-                    int idSupervisor = rs.getInt("id_supervisor");
-                    int totalInscritos = rs.getInt("total_inscritos");
-
-                    monitoria = new Monitoria(disciplina, horario, local, idMonitor, idSupervisor, totalInscritos, idMonitoria);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return monitoria;
-    }
-
-
     public static boolean inscreverMonitoria(int alunoId, int monitoriaId) throws SQLException {
+
         String sql = "INSERT INTO inscricao_monitoria (id_aluno, id_monitoria) VALUES (?, ?)";
 
         try (Connection conn = getConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -171,6 +134,7 @@ public class AlunoDao {
     }
 
     public static boolean cancelarInscricao(int idMonitoria, int idAluno) {
+
         String sql = "DELETE FROM inscricao_monitoria WHERE id_monitoria = ? AND id_aluno = ?";
         try (Connection conn = getConexao();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -203,6 +167,4 @@ public class AlunoDao {
         }
         return false;
     }
-
-
 }

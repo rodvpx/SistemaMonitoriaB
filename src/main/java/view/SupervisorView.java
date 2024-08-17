@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -53,7 +52,7 @@ public class SupervisorView extends BasePanel {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
         // Create and add buttons
-        String[] buttonLabels = {"Monitorias", "Monitores", "Disciplinas", "Locais", "Sair"};
+        String[] buttonLabels = {"Monitorias", "Monitores", "Disciplinas", "Locais", "Inscritos", "Sair"};
         for (String label : buttonLabels) {
             StyleButton button = new StyleButton(label);
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height));
@@ -203,7 +202,7 @@ public class SupervisorView extends BasePanel {
             }
         });
 
-        // Ajuste para selecionar o item correto
+
         salaComboBox.setSelectedItem(monitoria.getLocal());
         salaComboBox.setPreferredSize(new Dimension(200, 30));
 
@@ -232,7 +231,7 @@ public class SupervisorView extends BasePanel {
         formPanel.add(disciplinaLabel);
         formPanel.add(disciplinaComboBox);
         formPanel.add(salaLabel);
-        formPanel.add(salaComboBox); // Corrigido para adicionar `salaComboBox`
+        formPanel.add(salaComboBox);
         formPanel.add(monitorLabel);
         formPanel.add(monitorComboBox);
         formPanel.add(diaLabel);
@@ -263,8 +262,8 @@ public class SupervisorView extends BasePanel {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
                 monitoria.setDisciplina(disciplinaSelecionada);
-                monitoria.setLocal(localSelecionado); // Atualize o `Local` completo
-                monitoria.setIdMonitor(MonitorDao.obterIdMonitor(monitorSelecionado)); // Atualize conforme sua implementação
+                monitoria.setLocal(localSelecionado);
+                monitoria.setIdMonitor(MonitorDao.obterIdMonitor(monitorSelecionado));
                 monitoria.getHorario().setDiaSemana(diaSelecionado);
                 monitoria.getHorario().setHoras(horarioSelecionado);
 
@@ -299,7 +298,7 @@ public class SupervisorView extends BasePanel {
         disciplinaComboBox.setPreferredSize(new Dimension(200, 30));
 
         JLabel salaLabel = new JLabel("Sala:");
-        JComboBox<Local> salaComboBox = new JComboBox<>(getSalas().toArray(new Local[0])); // Corrigido para usar `Local`
+        JComboBox<Local> salaComboBox = new JComboBox<>(getSalas().toArray(new Local[0]));
         salaComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -443,7 +442,7 @@ public class SupervisorView extends BasePanel {
         DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Matrícula", "Nome"}, 0);
 
         for (Aluno aluno : alunos) {
-            String matricula = aluno.getMatricula(); // Supondo que há um método getMatricula() em Aluno
+            String matricula = aluno.getMatricula();
             String nome = aluno.getNome();
             tableModel.addRow(new Object[]{matricula, nome});
         }
@@ -643,8 +642,7 @@ public class SupervisorView extends BasePanel {
             addButton(bottomPanel, "Excluir Local", e -> {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    // Assume que a coluna do código é a primeira (índice 0)
-                    // Verifique o tipo de dados esperado para o código
+
                     Object idObject = tableModel.getValueAt(selectedRow, 0); // Obtém o valor da coluna do código
 
                     if (idObject instanceof Integer) {
@@ -689,7 +687,7 @@ public class SupervisorView extends BasePanel {
         StyleButton button = new StyleButton(label);
         button.addActionListener(listener);
         button.setFont(new Font("Arial", Font.PLAIN, 15));
-        button.setPreferredSize(new Dimension(200, 50)); // Ajuste o tamanho do botão aqui
+        button.setPreferredSize(new Dimension(200, 50));
         panel.add(button);
     }
 }

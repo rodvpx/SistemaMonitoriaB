@@ -255,6 +255,4 @@ public class AlunoView extends BasePanel {
             rightPanel.repaint();
         });
     }
-
-
 }

@@ -26,6 +26,7 @@ public class AlunoController implements ActionListener {
     }
 
     public void mostrarView() {
+
         JFrame frame = new JFrame("SISTEMA MONITORIA - Painel do Aluno");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         util.IconUtil.setIcon(frame);
@@ -82,8 +83,8 @@ public class AlunoController implements ActionListener {
     }
 
     public void inscreverMonitoria(Monitoria monitoria) throws SQLException {
-        // Obter o ID do aluno
-        int alunoId = AlunoDao.obterIdAluno(aluno.getMatricula()); // Supondo que o objeto aluno já está disponível
+
+        int alunoId = AlunoDao.obterIdAluno(aluno.getMatricula());
 
         // Verificar se o aluno já está inscrito na monitoria
         if (AlunoDao.isAlunoInscrito(alunoId, monitoria.getId())) {
@@ -99,13 +100,15 @@ public class AlunoController implements ActionListener {
         }
     }
 
-
     public void cancelarInscricao(Monitoria monitoria) throws SQLException {
-        if(AlunoDao.cancelarInscricao(monitoria.getId(), AlunoDao.obterIdAluno(aluno.getMatricula()))){
+
+        if (AlunoDao.cancelarInscricao(monitoria.getId(), AlunoDao.obterIdAluno(aluno.getMatricula()))) {
+
             JOptionPane.showMessageDialog(view, "Cancelamento da inscrição feita com sucesso");
             int idAluno = AlunoDao.obterIdAluno(aluno.getMatricula());
             view.mostrarMinhasMonitorias(AlunoDao.buscarMinhasMonitorias(idAluno));
-        }else{
+
+        } else {
             JOptionPane.showMessageDialog(view, "Erro ao cancelar inscricao");
         }
     }

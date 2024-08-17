@@ -17,18 +17,19 @@ public class DisciplinaDao {
 
         String sql = "insert into disciplina values(?,?,?)";
 
-        try(Connection conn = getConexao();
-        PreparedStatement sta = conn.prepareStatement(sql)){
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
             sta.setString(1, disciplina.getNome());
             sta.setInt(2, Integer.parseInt(disciplina.getCodigo()));
             sta.setString(3, "*");
             sta.executeUpdate();
             return true;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
     public static boolean excluirDisciplina(String codigo) throws SQLException {
 
         String sql = "DELETE FROM disciplina WHERE codigo = ?";
@@ -44,13 +45,13 @@ public class DisciplinaDao {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Em produção, considere usar logs
+            e.printStackTrace();
         }
-
         return false;
     }
 
     public static Disciplina[] getDisciplinas() {
+
         List<Disciplina> disciplinas = new ArrayList<>();
 
         String sqlDisciplinas = "SELECT codigo, nome FROM disciplina ORDER BY nome";
@@ -72,9 +73,10 @@ public class DisciplinaDao {
     }
 
 
-
     public static boolean verificarCodigoExistente(String codigo) throws SQLException {
+
         String sql = "SELECT COUNT(*) FROM disciplina WHERE codigo = ?";
+
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, codigo);
@@ -87,7 +89,7 @@ public class DisciplinaDao {
         return false; // Retorna false se o código não existir
     }
 
-     public static List<Disciplina> mostrarDisciplina() throws SQLException {
+    public static List<Disciplina> mostrarDisciplina() throws SQLException {
         // Consultar as disciplinas do banco de dados
         List<Disciplina> disciplinas = new ArrayList<>();
         String sql = "SELECT codigo, nome FROM disciplina ORDER BY nome ASC";
@@ -104,5 +106,4 @@ public class DisciplinaDao {
         }
         return disciplinas;
     }
-
 }

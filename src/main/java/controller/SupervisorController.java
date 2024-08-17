@@ -6,11 +6,9 @@ import view.StyleButton;
 import view.SupervisorView;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.List;
 
 public class SupervisorController implements ActionListener {
 
@@ -26,6 +24,7 @@ public class SupervisorController implements ActionListener {
     }
 
     public void mostrarView() {
+
         JFrame frame = new JFrame("SISTEMA MONITORIA - Painel do Supervisor");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         util.IconUtil.setIcon(frame);
@@ -91,6 +90,7 @@ public class SupervisorController implements ActionListener {
     }
 
     public void criarMonitoriaCon(Disciplina disciplina, String dia, String horarioStr, String salaNome, String monitorNome) throws SQLException {
+
         Local local = LocalDao.obterLocal(salaNome);
         int idSupervisor = SupervisorDao.obterIdSupervisor(supervisor.getMatricula());
         int idMonitor = MonitorDao.obterIdMonitor(monitorNome);
@@ -102,6 +102,7 @@ public class SupervisorController implements ActionListener {
 
 
     public void excluirMonitoria(Monitoria monitoria) {
+
         try {
             MonitoriaDao.excluirMonitoria(monitoria);
             view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
@@ -113,6 +114,7 @@ public class SupervisorController implements ActionListener {
 
 
     public void promoverAluno(String matricula) throws SQLException {
+
        Integer idAluno = AlunoDao.obterIdAluno(matricula);
         if(AlunoDao.promoverAluno(idAluno)){
             JOptionPane.showMessageDialog(view, "Aluno promovido com sucesso!");
@@ -124,6 +126,7 @@ public class SupervisorController implements ActionListener {
     }
 
     public void excluirMonitor(String matricula) throws SQLException {
+
         if(MonitorDao.excluirMonitor(matricula)){
             JOptionPane.showMessageDialog(view, "Monitor excluido com sucesso!");
             view.mostrarMonitores(MonitorDao.mostrarMonitores());

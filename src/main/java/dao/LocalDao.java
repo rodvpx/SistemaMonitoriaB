@@ -17,13 +17,13 @@ public class LocalDao {
 
         String sql = "insert into local (sala, capacidade) values(?,?)";
 
-        try(Connection conn = getConexao();
-        PreparedStatement sta = conn.prepareStatement(sql)){
+        try (Connection conn = getConexao();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
             sta.setString(1, local.getSala());
             sta.setInt(2, local.getCapacidade());
             sta.executeUpdate();
             return true;
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -47,7 +47,9 @@ public class LocalDao {
 
 
     public static Local obterLocal(String nomeSala) {
+
         String sql = "SELECT id, sala, capacidade FROM local WHERE sala = ?";
+
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nomeSala);
@@ -65,7 +67,9 @@ public class LocalDao {
     }
 
     public static List<Local> getSalas() {
+
         List<Local> locais = new ArrayList<>();
+
         String sqlSalas = "SELECT id, sala FROM local ORDER BY sala";
 
         try (Connection conn = getConexao();
@@ -87,7 +91,9 @@ public class LocalDao {
 
 
     public static boolean verificarLocalExiste(String sala) throws SQLException {
+
         String sql = "Select count(*) from local where sala = ?";
+
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, sala);

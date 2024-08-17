@@ -20,9 +20,9 @@ public class AppController {
 
         // Carrega a imagem do ícone do classpath
         ImageIcon icon = new ImageIcon(AppController.class.getResource("/Img/icon.png"));
-            Image image = icon.getImage();
-            mainFrame.setIconImage(image);
-            
+        Image image = icon.getImage();
+        mainFrame.setIconImage(image);
+
         // Adiciona a visualização principal à janela
         mainFrame.add(principalView);
 

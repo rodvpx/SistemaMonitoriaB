@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 26/07/2024 às 00:14
+-- Tempo de geração: 17/08/2024 às 23:22
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -31,7 +31,7 @@ CREATE TABLE `disciplina` (
   `nome` varchar(50) NOT NULL,
   `codigo` int(11) NOT NULL,
   `monitor` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `disciplina`
@@ -43,6 +43,9 @@ INSERT INTO `disciplina` (`nome`, `codigo`, `monitor`) VALUES
 ('Matemática Discreta', 3, '*'),
 ('Banco de Dados I', 4, '*'),
 ('Logica', 5, '*'),
+('Engenharia de Software', 6, '*'),
+('Programação Python I', 7, '*'),
+('Desenvolvimento Web I', 8, '*'),
 ('Estrutura De Dados I', 10, '*');
 
 -- --------------------------------------------------------
@@ -53,7 +56,7 @@ INSERT INTO `disciplina` (`nome`, `codigo`, `monitor`) VALUES
 
 CREATE TABLE `horario` (
   `id` int(11) NOT NULL,
-  `dia_semana` varchar(10) NOT NULL,
+  `dia_semana` varchar(30) DEFAULT NULL,
   `horas` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -62,7 +65,48 @@ CREATE TABLE `horario` (
 --
 
 INSERT INTO `horario` (`id`, `dia_semana`, `horas`) VALUES
-(1, 'segunda', '15:00');
+(1, 'segunda', '15:00'),
+(2, 'Segunda-feira', '08:00'),
+(3, 'Quarta-feira', '14:00'),
+(4, 'Sexta-feira', '10:30'),
+(6, 'Segunda-feira', '13:00'),
+(7, 'Quarta-feira', '15:00'),
+(8, 'Segunda-feira', '13:00'),
+(9, 'Terça-feira', '15:00'),
+(10, 'Quarta-feira', '16:30'),
+(11, 'Quinta-feira', '08:30'),
+(12, 'Segunda-feira', '15:30'),
+(13, 'Terça-feira', '13:00'),
+(14, 'Terça-feira', '13:00'),
+(15, 'Sexta-feira', '13:00'),
+(16, 'Quinta-feira', '17:00'),
+(17, 'Terça-feira', '07:00'),
+(18, 'Quinta-feira', '17:00'),
+(19, 'Quarta-feira', '13:00'),
+(20, 'Quarta-feira', '16:00'),
+(21, 'Terça-feira', '15:00'),
+(26, 'Sexta-feira', '13:00'),
+(27, 'Quinta-feira', '08:30'),
+(28, 'Quinta-feira', '08:30'),
+(29, 'Sexta-feira', '15:30'),
+(30, 'Quinta-feira', '20:00'),
+(31, 'Terça-feira', '16:33'),
+(32, 'Quarta-feira', '16:30'),
+(33, 'Quinta-feira', '17:00'),
+(34, 'Quinta-feira', '17:00'),
+(35, 'Segunda-feira', '13:00'),
+(36, 'Segunda-feira', '13:00'),
+(37, 'Segunda-feira', '13:00'),
+(38, 'Segunda-feira', '13:00'),
+(39, 'Segunda-feira', '08:00'),
+(40, 'Segunda-feira', '10:00'),
+(41, 'Terça-feira', '09:10'),
+(42, 'Terça-feira', '08:00'),
+(43, 'Quinta-feira', '13:00'),
+(44, 'Quinta-feira', '13:00'),
+(45, 'Quinta-feira', '15:00'),
+(46, 'Quinta-feira', '15:00'),
+(47, 'Quinta-feira', '15:00');
 
 -- --------------------------------------------------------
 
@@ -76,6 +120,25 @@ CREATE TABLE `inscricao_monitoria` (
   `id_aluno` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Despejando dados para a tabela `inscricao_monitoria`
+--
+
+INSERT INTO `inscricao_monitoria` (`id`, `id_monitoria`, `id_aluno`) VALUES
+(10, 32, 1),
+(15, 32, 3),
+(17, 32, 13),
+(12, 32, 22),
+(11, 33, 1),
+(20, 33, 13),
+(16, 34, 3),
+(21, 34, 13),
+(13, 34, 22),
+(23, 35, 2),
+(18, 35, 13),
+(24, 36, 2),
+(19, 36, 13);
+
 -- --------------------------------------------------------
 
 --
@@ -85,19 +148,21 @@ CREATE TABLE `inscricao_monitoria` (
 CREATE TABLE `local` (
   `id` int(11) NOT NULL,
   `sala` varchar(20) NOT NULL,
-  `capacidade` int(11) NOT NULL,
-  `inscritos` int(11) DEFAULT 0
+  `capacidade` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Despejando dados para a tabela `local`
 --
 
-INSERT INTO `local` (`id`, `sala`, `capacidade`, `inscritos`) VALUES
-(1, 'Lab 1', 30, 0),
-(2, 'Lab 2', 25, 0),
-(4, 'Lab 8', 30, 0),
-(5, 'Lab 5', 27, 0);
+INSERT INTO `local` (`id`, `sala`, `capacidade`) VALUES
+(1, 'Lab 1', 30),
+(2, 'Lab 2', 25),
+(4, 'Lab 8', 30),
+(5, 'Lab 5', 27),
+(9, 'Lab 3', 25),
+(10, 'Lab 4', 35),
+(12, 'Lab 6', 15);
 
 -- --------------------------------------------------------
 
@@ -139,7 +204,11 @@ CREATE TABLE `monitoria` (
 --
 
 INSERT INTO `monitoria` (`id`, `disciplina`, `horario`, `local`, `id_monitor`, `id_supervisor`) VALUES
-(4, 1, 1, 2, 3, 89);
+(32, 4, 39, 1, 22, 48),
+(33, 8, 40, 1, 3, 48),
+(34, 6, 41, 2, 28, 48),
+(35, 10, 42, 2, 44, 48),
+(36, 5, 44, 4, 6, 48);
 
 -- --------------------------------------------------------
 
@@ -161,8 +230,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALUES
-(1, 'admin', 'admin', 'adminmonitoria', 'admin', NULL),
-(2, 'Fernando Silva', 'fernando.silva123@gmail.com', 'senha123', '1234567890', 'M'),
+(1, 'admin', 'admin', 'admin', 'admin', 'M'),
+(2, 'Fernando Silva', 'fernando.silva123@gmail.com', 'senha123', '1234567890', 'A'),
 (3, 'Amanda Santos', 'amanda.santos456@hotmail.com', 'senha456', '0987654321', 'M'),
 (4, 'Pedro Oliveira', 'pedro.oliveira789@gmail.com', 'senha789', '1357924680', 'A'),
 (5, 'Ana Souza', 'ana.souza123@hotmail.com', 'senhaabc', '2468013579', 'A'),
@@ -173,7 +242,7 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALU
 (10, 'Luiz Souza', 'luiz.souza789@gmail.com', 'senhaabc', '3141592653', 'A'),
 (11, 'Gabriel Pereira', 'gabriel.pereira123@hotmail.com', 'senha123', '2718281828', 'A'),
 (12, 'Juliana Almeida', 'juliana.almeida456@gmail.com', 'senha456', '8182838485', 'A'),
-(13, 'Rodrigo Santos', 'rodrigo.santos789@hotmail.com', 'senha789', '2384626433', 'A'),
+(13, 'Rodrigo Santos', 'rodrigo.santos789@hotmail.com', 'senha789', '2384626433', 'M'),
 (14, 'Camila Lima', 'camila.lima123@gmail.com', 'senhaxyz', '8462643383', 'A'),
 (15, 'Mateus Oliveira', 'mateus.oliveira456@hotmail.com', 'senhaabc', '2795028841', 'A'),
 (16, 'Patr?cia Souza', 'patricia.souza123@gmail.com', 'senha123', '9716939937', 'A'),
@@ -188,7 +257,7 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALU
 (25, 'Jos? Lima', 'jose.lima789@hotmail.com', 'senhaabc', '7465754577', 'A'),
 (26, 'Isabela Oliveira', 'isabela.oliveira123@gmail.com', 'senha123', '2738658976', 'A'),
 (27, 'Lucas Almeida', 'lucas.almeida456@hotmail.com', 'senha456', '4239050288', 'A'),
-(28, 'Beatriz Souza', 'beatriz.souza789@gmail.com', 'senha789', '9878343675', 'A'),
+(28, 'Beatriz Souza', 'beatriz.souza789@gmail.com', 'senha789', '9878343675', 'M'),
 (29, 'Thiago Pereira', 'thiago.pereira123@hotmail.com', 'senhaxyz', '4626433832', 'A'),
 (30, 'Renata Santos', 'renata.santos789@gmail.com', 'senhaabc', '7950288419', 'A'),
 (31, 'Vin?cius Lima', 'vinicius.lima123@hotmail.com', 'senha123', '8128498086', 'A'),
@@ -204,10 +273,10 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALU
 (41, 'Larissa Santos', 'larissa.santos123@hotmail.com', 'senha123', '8193261179', 'A'),
 (42, 'Gustavo Lima', 'gustavo.lima456@gmail.com', 'senha456', '0228416268', 'A'),
 (43, 'Let?cia Oliveira', 'leticia.oliveira789@hotmail.com', 'senha789', '0348253421', 'A'),
-(44, 'Carla Souza', 'carla.souza123@gmail.com', 'senhaxyz', '8745648122', 'A'),
+(44, 'Carla Souza', 'carla.souza123@gmail.com', 'senhaxyz', '8745648122', 'M'),
 (45, 'F?bio Pereira', 'fabio.pereira456@hotmail.com', 'senhaabc', '3883539242', 'A'),
 (46, 'Mariana Lima', 'mariana.lima789@gmail.com', 'senha123', '1190341027', 'A'),
-(47, 'Diego Santos', 'diego.santos456@hotmail.com', 'senha456', '5477051221', 'A'),
+(47, 'Diego Santos', 'diego.santos456@hotmail.com', 'senha456', '5477051221', 'M'),
 (48, 'Jos? Lima', 'jose.lima123@gmail.com', 'senha123', '746575457712', 'S'),
 (49, 'Isabela Oliveira', 'isabela.oliveira456@hotmail.com', 'senha456', '273865897612', 'S'),
 (50, 'Lucas Almeida', 'lucas.almeida789@gmail.com', 'senha789', '423905028812', 'S'),
@@ -249,7 +318,16 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `matricula`, `tipo`) VALU
 (86, 'Vanessa Lima', 'vanessa.lima789@hotmail.com', 'senhaabc', '780780434312', 'S'),
 (87, 'Miguel Oliveira', 'miguel.oliveira123@gmail.com', 'senha123', '830119491312', 'S'),
 (88, 'Carolina Santos', 'carolina.santos456@hotmail.com', 'senha456', '284422825712', 'S'),
-(89, 'Pedro Souza', 'pedro.souza789@gmail.com', 'senha789', '430711872912', 'S');
+(89, 'Pedro Souza', 'pedro.souza789@gmail.com', 'senha789', '430711872912', 'S'),
+(90, 'TesteAluno', 'testealuno@gmail.com', '123', '7852361230', 'A'),
+(91, 'TesteSupervisor', 'testesupervisor@gmail.com', '123', '785236123000', 'S'),
+(92, 'TesteNovoSUp', 'supteste', '123', '000111222123', 'S'),
+(93, 'novotestesup', 'supervisortestes', '123', '789789789789', 'S'),
+(94, 'testandonovosup', 'supstestes', '123', '147147147147', 'S'),
+(95, 'testando', 'testesuper', '123', '852852852852', 'S'),
+(96, 'testecadastroaluno', 'tertekk', '123', '1231231231', 'A'),
+(97, 'testesupcadastro', 'testesupca', '123', '789789741123', 'S'),
+(98, 'Milena Silva', 'milena.silva@gmail.com', '123456', '8989562319', 'A');
 
 --
 -- Índices para tabelas despejadas
@@ -315,19 +393,19 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `horario`
 --
 ALTER TABLE `horario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT de tabela `inscricao_monitoria`
 --
 ALTER TABLE `inscricao_monitoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de tabela `local`
 --
 ALTER TABLE `local`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `monitor`
@@ -339,13 +417,13 @@ ALTER TABLE `monitor`
 -- AUTO_INCREMENT de tabela `monitoria`
 --
 ALTER TABLE `monitoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- Restrições para tabelas despejadas

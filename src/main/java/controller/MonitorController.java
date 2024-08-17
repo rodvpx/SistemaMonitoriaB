@@ -26,6 +26,7 @@ public class MonitorController implements ActionListener {
     }
 
     public void mostrarView() {
+
         JFrame frame = new JFrame("SISTEMA MONITORIA - Painel do Monitor");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         util.IconUtil.setIcon(frame);
@@ -81,8 +82,8 @@ public class MonitorController implements ActionListener {
     }
 
     public void inscreverMonitoria(Monitoria monitoria) throws SQLException {
-        // Obter o ID do aluno
-        int monitorId = AlunoDao.obterIdAluno(monitor.getMatricula()); // Supondo que o objeto aluno já está disponível
+
+        int monitorId = AlunoDao.obterIdAluno(monitor.getMatricula());
 
         // Verificar se o aluno já está inscrito na monitoria
         if (AlunoDao.isAlunoInscrito(monitorId, monitoria.getId())) {
@@ -98,23 +99,25 @@ public class MonitorController implements ActionListener {
         }
     }
 
-
     public void cancelarInscricao(Monitoria monitoria) throws SQLException {
-        if(AlunoDao.cancelarInscricao(monitoria.getId(), AlunoDao.obterIdAluno(monitor.getMatricula()))){
+
+        if (AlunoDao.cancelarInscricao(monitoria.getId(), AlunoDao.obterIdAluno(monitor.getMatricula()))) {
+
             JOptionPane.showMessageDialog(view, "Cancelamento da inscrição feita com sucesso");
             int idMonitor = AlunoDao.obterIdAluno(monitor.getMatricula());
             view.mostrarMinhasMonitorias(AlunoDao.buscarMinhasMonitorias(idMonitor));
-        }else{
+
+        } else {
             JOptionPane.showMessageDialog(view, "Erro ao cancelar inscricao");
         }
     }
 
     public void atualizarMonitoria(Monitoria monitoria) throws SQLException {
 
-        if(MonitoriaDao.editarMonitoria(monitoria)){
+        if (MonitoriaDao.editarMonitoria(monitoria)) {
             JOptionPane.showMessageDialog(view, "Monitoria atualizada com sucesso!");
             view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
-        }else{
+        } else {
             JOptionPane.showMessageDialog(view, "Erro ao atualizar monitoria!");
         }
     }

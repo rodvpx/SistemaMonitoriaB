@@ -42,7 +42,7 @@ public class CadastroView extends BasePanel {
         gbc.anchor = GridBagConstraints.EAST;
         add(tipoLabel, gbc);
 
-        tipoComboBox = new JComboBox<>(new String[] {"Aluno", "Supervisor"});
+        tipoComboBox = new JComboBox<>(new String[]{"Aluno", "Supervisor"});
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
@@ -121,7 +121,7 @@ public class CadastroView extends BasePanel {
         add(botaoVoltar, gbc);
     }
 
-    public String getMatricula(){
+    public String getMatricula() {
         return matriculaField.getText();
     }
 
@@ -142,7 +142,6 @@ public class CadastroView extends BasePanel {
             throw new IllegalStateException("Tipo de usuário inválido selecionado.");
         }
     }
-
 
     public String getSenha() {
         return senhaField.getText();

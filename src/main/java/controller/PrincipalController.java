@@ -20,12 +20,8 @@ public class PrincipalController {
         inicializar();
     }
 
-    public PrincipalController(PrincipalView principalView) {
-        this.principalView = principalView;
-        inicializar();
-    }
-
     private void inicializar() {
+
         principalView.getBotaoLogin().addActionListener(e -> {
             try {
                 abrirLoginView();
@@ -38,6 +34,7 @@ public class PrincipalController {
     }
 
     private void abrirLoginView() throws SQLException {
+
         LoginView loginView = new LoginView();
         JFrame loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -61,6 +58,7 @@ public class PrincipalController {
     }
 
     private void validarLogin(String email, String senha) throws SQLException {
+
         LoginResult result = UsuarioDao.login(email, senha);
         if (result != null) {
             Usuario usuario = result.getUsuario();
@@ -92,6 +90,7 @@ public class PrincipalController {
     }
 
     private void abrirCadastroView() {
+
         CadastroView cadastroView = new CadastroView();
 
         JFrame cadastroFrame = new JFrame("Cadastro de Usuário");
@@ -115,6 +114,7 @@ public class PrincipalController {
     }
 
     private void cadastrar(CadastroView cadastroView) throws SQLException {
+
         String matricula = cadastroView.getMatricula();
         String nome = cadastroView.getNome();
         String email = cadastroView.getEmail();

@@ -6,7 +6,7 @@ public class Monitoria {
     private Local local;
     private int idMonitor;
     private int idSupervisor;
-    private int totalInscritos; // Adicione este campo
+    private int totalInscritos;
     private int id;
 
     // Construtor

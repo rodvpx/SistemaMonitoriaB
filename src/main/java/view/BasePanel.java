@@ -8,5 +8,4 @@ public class BasePanel extends JPanel {
     public BasePanel(){
         setBackground(Color.decode("#BEBEBE"));
     }
-
 }
