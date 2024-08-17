@@ -47,7 +47,7 @@ public class LocalDao {
 
 
     public static Local obterLocal(String nomeSala) {
-        String sql = "SELECT id, sala, capacidade, inscritos FROM local WHERE sala = ?";
+        String sql = "SELECT id, sala, capacidade FROM local WHERE sala = ?";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nomeSala);
@@ -56,8 +56,7 @@ public class LocalDao {
                 int id = rs.getInt("id");
                 String sala = rs.getString("sala");
                 int capacidade = rs.getInt("capacidade");
-                int inscritos = rs.getInt("inscritos");
-                return new Local(id, sala, capacidade, inscritos);
+                return new Local(id, sala, capacidade);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -65,24 +64,27 @@ public class LocalDao {
         return null;
     }
 
-    public static String[] getSalas() {
-        List<String> salas = new ArrayList<>();
+    public static List<Local> getSalas() {
+        List<Local> locais = new ArrayList<>();
+        String sqlSalas = "SELECT id, sala FROM local ORDER BY sala";
 
-        String sqlSalas = "SELECT sala FROM local ORDER BY sala";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sqlSalas);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                salas.add(rs.getString("sala"));
+                int id = rs.getInt("id");
+                String nome = rs.getString("sala");
+                locais.add(new Local(id, nome, 0));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return salas.toArray(new String[0]); // Convertendo a lista para um array de Strings
+        return locais;
     }
+
 
     public static boolean verificarLocalExiste(String sala) throws SQLException {
         String sql = "Select count(*) from local where sala = ?";
@@ -103,7 +105,7 @@ public class LocalDao {
 
         List<Local> locais = new ArrayList<>();
 
-        String sql = "SELECT id, sala, capacidade, inscritos FROM local order by sala asc ";
+        String sql = "SELECT id, sala, capacidade FROM local order by sala asc ";
         try (Connection conn = getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -113,7 +115,6 @@ public class LocalDao {
                 local.setId(rs.getInt("id"));
                 local.setSala(rs.getString("sala"));
                 local.setCapacidade(rs.getInt("capacidade"));
-                local.setInscritos(rs.getInt("inscritos"));
                 locais.add(local);
             }
         }

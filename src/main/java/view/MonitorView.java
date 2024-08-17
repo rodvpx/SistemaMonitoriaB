@@ -1,35 +1,38 @@
 package view;
 
 import controller.AlunoController;
+import controller.MonitorController;
+import dao.DisciplinaDao;
 import dao.MonitorDao;
 import dao.MonitoriaDao;
-import model.Aluno;
-import model.Monitoria;
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
 
+import static dao.LocalDao.getSalas;
 import static view.SupervisorView.addButton;
 
-public class AlunoView extends BasePanel {
+public class MonitorView extends BasePanel {
 
     private JPanel rightPanel;
-    private Aluno aluno;
-    private AlunoController controller;
+    private Monitor monitor;
+    private MonitorController controller;
     private JPanel selectedCard;
     private Monitoria[] selectedMonitoria = new Monitoria[1];
 
-    public AlunoView(Aluno aluno, AlunoController controller) {
-        this.aluno = aluno;
+    public MonitorView(Monitor monitor, MonitorController controller) {
+        this.monitor = monitor;
         this.controller = controller;
-        criarPainelAluno();
+        criarPainelMonitor();
     }
 
-    private void criarPainelAluno() {
+    private void criarPainelMonitor() {
         setLayout(new BorderLayout());
 
         JPanel leftPanel = new JPanel();
@@ -39,7 +42,7 @@ public class AlunoView extends BasePanel {
         imageNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         JLabel imageLabel = new JLabel(SupervisorView.redimensionarImagem("user-286.png", 60, 60));
-        JLabel nameLabel = new JLabel(aluno.getNome());
+        JLabel nameLabel = new JLabel(monitor.getNome());
         nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
         imageNamePanel.add(imageLabel);
@@ -159,6 +162,13 @@ public class AlunoView extends BasePanel {
                     }
                 }
             });
+            addButton(bottomPanel, "Editar Monitoria", e -> {
+                if (selectedMonitoria[0] != null) {
+                    editarMonitoria(selectedMonitoria[0]);
+                } else {
+                    JOptionPane.showMessageDialog(rightPanel, "Nenhuma monitoria selecionada.", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            });
 
             rightPanel.add(bottomPanel, BorderLayout.SOUTH);
             rightPanel.revalidate();
@@ -166,6 +176,111 @@ public class AlunoView extends BasePanel {
         });
     }
 
+    public void editarMonitoria(Monitoria monitoria) {
+        JFrame frame = new JFrame("Editar Monitoria");
+        frame.setSize(400, 350);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null); // Centraliza a janela na tela
+
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Espaçamento ao redor
+
+        JLabel disciplinaLabel = new JLabel("Disciplina:");
+        JComboBox<Disciplina> disciplinaComboBox = new JComboBox<>(DisciplinaDao.getDisciplinas());
+        disciplinaComboBox.setSelectedItem(monitoria.getDisciplina());
+        disciplinaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel salaLabel = new JLabel("Sala:");
+        JComboBox<Local> salaComboBox = new JComboBox<>(getSalas().toArray(new Local[0]));
+        salaComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Local local = (Local) value;
+                return super.getListCellRendererComponent(list, local.getSala(), index, isSelected, cellHasFocus);
+            }
+        });
+
+        // Ajuste para selecionar o item correto
+        salaComboBox.setSelectedItem(monitoria.getLocal());
+        salaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel monitorLabel = new JLabel("Monitor:");
+        JComboBox<String> monitorComboBox = new JComboBox<>(MonitorDao.getMonitores());
+        monitorComboBox.setSelectedItem(MonitorDao.getMonitorId(monitoria.getIdMonitor()));
+        monitorComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel diaLabel = new JLabel("Dia da Semana:");
+        String[] diasSemana = {"Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"};
+        JComboBox<String> diaComboBox = new JComboBox<>(diasSemana);
+        diaComboBox.setSelectedItem(monitoria.getHorario().getDiaSemana());
+        diaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel horarioLabel = new JLabel("Horário:");
+        JTextField horarioField = new JTextField(monitoria.getHorario().getHoras());
+        horarioField.setPreferredSize(new Dimension(200, 30));
+
+        Font labelFont = new Font("SansSerif", Font.BOLD, 14);
+        disciplinaLabel.setFont(labelFont);
+        salaLabel.setFont(labelFont);
+        monitorLabel.setFont(labelFont);
+        diaLabel.setFont(labelFont);
+        horarioLabel.setFont(labelFont);
+
+        formPanel.add(disciplinaLabel);
+        formPanel.add(disciplinaComboBox);
+        formPanel.add(salaLabel);
+        formPanel.add(salaComboBox); // Corrigido para adicionar `salaComboBox`
+        formPanel.add(monitorLabel);
+        formPanel.add(monitorComboBox);
+        formPanel.add(diaLabel);
+        formPanel.add(diaComboBox);
+        formPanel.add(horarioLabel);
+        formPanel.add(horarioField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton salvarButton = new JButton("Salvar");
+        salvarButton.setPreferredSize(new Dimension(150, 30));
+        salvarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        JButton cancelarButton = new JButton("Cancelar");
+        cancelarButton.setPreferredSize(new Dimension(150, 30));
+        cancelarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        buttonPanel.add(salvarButton);
+        buttonPanel.add(cancelarButton);
+
+        salvarButton.addActionListener(e -> {
+            Disciplina disciplinaSelecionada = (Disciplina) disciplinaComboBox.getSelectedItem();
+            Local localSelecionado = (Local) salaComboBox.getSelectedItem();
+            String monitorSelecionado = (String) monitorComboBox.getSelectedItem();
+            String diaSelecionado = (String) diaComboBox.getSelectedItem();
+            String horarioSelecionado = (String) horarioField.getText();
+
+            if (disciplinaSelecionada == null || localSelecionado == null || monitorSelecionado.isEmpty()
+                    || diaSelecionado.isEmpty() || horarioSelecionado.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                monitoria.setDisciplina(disciplinaSelecionada);
+                monitoria.setLocal(localSelecionado); // Atualize o `Local` completo
+                monitoria.setIdMonitor(MonitorDao.obterIdMonitor(monitorSelecionado)); // Atualize conforme sua implementação
+                monitoria.getHorario().setDiaSemana(diaSelecionado);
+                monitoria.getHorario().setHoras(horarioSelecionado);
+
+                try {
+                    controller.atualizarMonitoria(monitoria);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                frame.dispose(); // Fecha a janela após salvar
+            }
+        });
+
+        cancelarButton.addActionListener(e -> frame.dispose());
+
+        frame.add(formPanel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+    }
 
     public void mostrarMinhasMonitorias(List<Monitoria> monitorias) {
         SwingUtilities.invokeLater(() -> {
@@ -255,6 +370,5 @@ public class AlunoView extends BasePanel {
             rightPanel.repaint();
         });
     }
-
 
 }

@@ -91,21 +91,26 @@ public class SupervisorController implements ActionListener {
     }
 
     public void criarMonitoriaCon(Disciplina disciplina, String dia, String horarioStr, String salaNome, String monitorNome) throws SQLException {
-
         Local local = LocalDao.obterLocal(salaNome);
         int idSupervisor = SupervisorDao.obterIdSupervisor(supervisor.getMatricula());
         int idMonitor = MonitorDao.obterIdMonitor(monitorNome);
-
         Horario horario = new Horario(dia, horarioStr);
 
         MonitoriaDao.criarMonitoria(disciplina, horario, local, idMonitor, idSupervisor);
         view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
     }
 
-    public void excluirMonitoria(Monitoria monitoria) throws SQLException {
-       MonitoriaDao.excluirMonitoria(monitoria);
-        view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
+
+    public void excluirMonitoria(Monitoria monitoria) {
+        try {
+            MonitoriaDao.excluirMonitoria(monitoria);
+            view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
+            JOptionPane.showMessageDialog(view, "Monitoria excluída com sucesso!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(view, "Erro ao excluir monitoria: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
+
 
     public void promoverAluno(String matricula) throws SQLException {
        Integer idAluno = AlunoDao.obterIdAluno(matricula);
@@ -173,6 +178,16 @@ public class SupervisorController implements ActionListener {
             view.mostrarLocais(LocalDao.mostrarLocal());
         }else {
             JOptionPane.showMessageDialog(view, "Erro ao excluir local!");
+        }
+    }
+
+    public void atualizarMonitoria(Monitoria monitoria) throws SQLException {
+
+        if(MonitoriaDao.editarMonitoria(monitoria)){
+            JOptionPane.showMessageDialog(view, "Monitoria atualizada com sucesso!");
+            view.mostrarMonitorias(MonitoriaDao.buscarTodasMonitorias());
+        }else{
+            JOptionPane.showMessageDialog(view, "Erro ao atualizar monitoria!");
         }
     }
 }

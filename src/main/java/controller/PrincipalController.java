@@ -81,7 +81,9 @@ public class PrincipalController {
                     break;
                 case "M":
                     Monitor monitor = (Monitor) usuario;
-                    // Abrir a tela do monitor
+                    MonitorController controller = new MonitorController(monitor, this);
+                    controller.mostrarView();
+                    fecharTelaPrincipal();
                     break;
             }
         } else {

@@ -8,11 +8,9 @@ import view.AlunoView;
 import view.StyleButton;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.List;
 
 public class AlunoController implements ActionListener {
 

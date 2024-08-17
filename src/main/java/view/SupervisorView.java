@@ -1,9 +1,6 @@
 package view;
 
-import dao.AlunoDao;
-import dao.DisciplinaDao;
-import dao.LocalDao;
-import dao.MonitorDao;
+import dao.*;
 import model.*;
 import controller.SupervisorController;
 
@@ -17,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
+
+import static dao.LocalDao.getSalas;
 
 public class SupervisorView extends BasePanel {
 
@@ -106,12 +105,20 @@ public class SupervisorView extends BasePanel {
                 monitoriaCard.setPreferredSize(new Dimension(200, 120)); // Tamanho fixo para os quadrados
                 monitoriaCard.setLayout(new BoxLayout(monitoriaCard, BoxLayout.Y_AXIS)); // Organiza os labels verticalmente
 
+                // Obter o número de inscritos
+                int numeroInscritos;
+                try {
+                    numeroInscritos = MonitoriaDao.contarInscricoes(monitoria.getId());
+                } catch (SQLException e) {
+                    numeroInscritos = 0; // Defina um valor padrão ou exiba uma mensagem de erro
+                    e.printStackTrace(); // Para debug
+                }
                 // Adiciona as informações da monitoria como labels no painel
                 monitoriaCard.add(new JLabel("Disciplina: " + monitoria.getDisciplina().getNome()));
                 monitoriaCard.add(new JLabel("Sala: " + monitoria.getLocal().getSala()));
                 monitoriaCard.add(new JLabel("Dia: " + monitoria.getHorario().getDiaSemana()));
                 monitoriaCard.add(new JLabel("Horário: " + monitoria.getHorario().getHoras()));
-                monitoriaCard.add(new JLabel("Inscritos: " + monitoria.getLocal().getInscritos()));
+                monitoriaCard.add(new JLabel("Inscritos: " + numeroInscritos));
                 monitoriaCard.add(new JLabel("Capacidade: " + monitoria.getLocal().getCapacidade()));
                 monitoriaCard.add(new JLabel("Monitor(a): " + MonitorDao.getMonitorId(monitoria.getIdMonitor())));
 
@@ -156,10 +163,13 @@ public class SupervisorView extends BasePanel {
             JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             addButton(bottomPanel, "Criar Monitoria", e -> controller.adicionarMonitoria());
             addButton(bottomPanel, "Excluir Monitoria", e -> {
-                try {
-                    controller.excluirMonitoria(selectedMonitoria[0]);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                controller.excluirMonitoria(selectedMonitoria[0]);
+            });
+            addButton(bottomPanel, "Editar Monitoria", e -> {
+                if (selectedMonitoria[0] != null) {
+                    editarMonitoria(selectedMonitoria[0]);
+                } else {
+                    JOptionPane.showMessageDialog(rightPanel, "Nenhuma monitoria selecionada.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             });
 
@@ -169,8 +179,113 @@ public class SupervisorView extends BasePanel {
         });
     }
 
-    public void adicionarMonitoria() {
+    public void editarMonitoria(Monitoria monitoria) {
+        JFrame frame = new JFrame("Editar Monitoria");
+        frame.setSize(400, 350);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null); // Centraliza a janela na tela
 
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Espaçamento ao redor
+
+        JLabel disciplinaLabel = new JLabel("Disciplina:");
+        JComboBox<Disciplina> disciplinaComboBox = new JComboBox<>(DisciplinaDao.getDisciplinas());
+        disciplinaComboBox.setSelectedItem(monitoria.getDisciplina());
+        disciplinaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel salaLabel = new JLabel("Sala:");
+        JComboBox<Local> salaComboBox = new JComboBox<>(getSalas().toArray(new Local[0]));
+        salaComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Local local = (Local) value;
+                return super.getListCellRendererComponent(list, local.getSala(), index, isSelected, cellHasFocus);
+            }
+        });
+
+        // Ajuste para selecionar o item correto
+        salaComboBox.setSelectedItem(monitoria.getLocal());
+        salaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel monitorLabel = new JLabel("Monitor:");
+        JComboBox<String> monitorComboBox = new JComboBox<>(MonitorDao.getMonitores());
+        monitorComboBox.setSelectedItem(MonitorDao.getMonitorId(monitoria.getIdMonitor()));
+        monitorComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel diaLabel = new JLabel("Dia da Semana:");
+        String[] diasSemana = {"Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"};
+        JComboBox<String> diaComboBox = new JComboBox<>(diasSemana);
+        diaComboBox.setSelectedItem(monitoria.getHorario().getDiaSemana());
+        diaComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel horarioLabel = new JLabel("Horário:");
+        JTextField horarioField = new JTextField(monitoria.getHorario().getHoras());
+        horarioField.setPreferredSize(new Dimension(200, 30));
+
+        Font labelFont = new Font("SansSerif", Font.BOLD, 14);
+        disciplinaLabel.setFont(labelFont);
+        salaLabel.setFont(labelFont);
+        monitorLabel.setFont(labelFont);
+        diaLabel.setFont(labelFont);
+        horarioLabel.setFont(labelFont);
+
+        formPanel.add(disciplinaLabel);
+        formPanel.add(disciplinaComboBox);
+        formPanel.add(salaLabel);
+        formPanel.add(salaComboBox); // Corrigido para adicionar `salaComboBox`
+        formPanel.add(monitorLabel);
+        formPanel.add(monitorComboBox);
+        formPanel.add(diaLabel);
+        formPanel.add(diaComboBox);
+        formPanel.add(horarioLabel);
+        formPanel.add(horarioField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton salvarButton = new JButton("Salvar");
+        salvarButton.setPreferredSize(new Dimension(150, 30));
+        salvarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        JButton cancelarButton = new JButton("Cancelar");
+        cancelarButton.setPreferredSize(new Dimension(150, 30));
+        cancelarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        buttonPanel.add(salvarButton);
+        buttonPanel.add(cancelarButton);
+
+        salvarButton.addActionListener(e -> {
+            Disciplina disciplinaSelecionada = (Disciplina) disciplinaComboBox.getSelectedItem();
+            Local localSelecionado = (Local) salaComboBox.getSelectedItem();
+            String monitorSelecionado = (String) monitorComboBox.getSelectedItem();
+            String diaSelecionado = (String) diaComboBox.getSelectedItem();
+            String horarioSelecionado = (String) horarioField.getText();
+
+            if (disciplinaSelecionada == null || localSelecionado == null || monitorSelecionado.isEmpty()
+                    || diaSelecionado.isEmpty() || horarioSelecionado.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            } else {
+                monitoria.setDisciplina(disciplinaSelecionada);
+                monitoria.setLocal(localSelecionado); // Atualize o `Local` completo
+                monitoria.setIdMonitor(MonitorDao.obterIdMonitor(monitorSelecionado)); // Atualize conforme sua implementação
+                monitoria.getHorario().setDiaSemana(diaSelecionado);
+                monitoria.getHorario().setHoras(horarioSelecionado);
+
+                try {
+                    controller.atualizarMonitoria(monitoria);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                frame.dispose(); // Fecha a janela após salvar
+            }
+        });
+
+        cancelarButton.addActionListener(e -> frame.dispose());
+
+        frame.add(formPanel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+    }
+
+    public void adicionarMonitoria() {
         JFrame frame = new JFrame("Adicionar Monitoria");
         frame.setSize(400, 350);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -184,7 +299,14 @@ public class SupervisorView extends BasePanel {
         disciplinaComboBox.setPreferredSize(new Dimension(200, 30));
 
         JLabel salaLabel = new JLabel("Sala:");
-        JComboBox<String> salaComboBox = new JComboBox<>(LocalDao.getSalas());
+        JComboBox<Local> salaComboBox = new JComboBox<>(getSalas().toArray(new Local[0])); // Corrigido para usar `Local`
+        salaComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Local local = (Local) value;
+                return super.getListCellRendererComponent(list, local.getSala(), index, isSelected, cellHasFocus);
+            }
+        });
         salaComboBox.setPreferredSize(new Dimension(200, 30));
 
         JLabel monitorLabel = new JLabel("Monitor:");
@@ -199,7 +321,6 @@ public class SupervisorView extends BasePanel {
         JLabel horarioLabel = new JLabel("Horário:");
         JTextField horarioField = new JTextField();
         horarioField.setPreferredSize(new Dimension(200, 30));
-
 
         Font labelFont = new Font("SansSerif", Font.BOLD, 14);
         disciplinaLabel.setFont(labelFont);
@@ -232,18 +353,17 @@ public class SupervisorView extends BasePanel {
 
         salvarButton.addActionListener(e -> {
             Disciplina disciplinaSelecionada = (Disciplina) disciplinaComboBox.getSelectedItem();
-            String salaSelecionada = (String) salaComboBox.getSelectedItem();
+            Local localSelecionado = (Local) salaComboBox.getSelectedItem();
             String monitorSelecionado = (String) monitorComboBox.getSelectedItem();
             String diaSelecionado = (String) diaComboBox.getSelectedItem();
             String horarioSelecionado = (String) horarioField.getText();
 
-            if (disciplinaSelecionada == null || salaSelecionada.isEmpty() || monitorSelecionado.isEmpty()
+            if (disciplinaSelecionada == null || localSelecionado == null || monitorSelecionado.isEmpty()
                     || diaSelecionado.isEmpty() || horarioSelecionado.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
-                    Disciplina disciplina = new Disciplina(disciplinaSelecionada.getNome(), disciplinaSelecionada.getCodigo());
-                    controller.criarMonitoriaCon(disciplina, diaSelecionado, horarioSelecionado, salaSelecionada, monitorSelecionado);
+                    controller.criarMonitoriaCon(disciplinaSelecionada, diaSelecionado, horarioSelecionado, localSelecionado.getSala(), monitorSelecionado);
                     JOptionPane.showMessageDialog(frame, "Monitoria adicionada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     frame.dispose(); // Fecha a janela após salvar
                 } catch (SQLException ex) {
@@ -453,7 +573,7 @@ public class SupervisorView extends BasePanel {
 
     public void mostrarLocais(List<Local> locais) {
 
-        String[] columnNames = {"Código", "Sala", "Capacidade", "Inscritos"};
+        String[] columnNames = {"Código", "Sala", "Capacidade"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
         for (Local local : locais) {
@@ -461,7 +581,6 @@ public class SupervisorView extends BasePanel {
                     local.getId(),
                     local.getSala(),
                     local.getCapacidade(),
-                    local.getInscritos()
             };
             tableModel.addRow(row);
         }
@@ -513,7 +632,7 @@ public class SupervisorView extends BasePanel {
                         } catch (NumberFormatException ex) {
                             JOptionPane.showMessageDialog(rightPanel, "Capacidade deve ser um número inteiro.", "Erro", JOptionPane.ERROR_MESSAGE);
                         } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                            JOptionPane.showMessageDialog(rightPanel, "Erro ao adicionar local: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
                         JOptionPane.showMessageDialog(rightPanel, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -532,8 +651,10 @@ public class SupervisorView extends BasePanel {
                         Integer id = (Integer) idObject; // Converte para Integer
                         try {
                             controller.excluirLocal(id);
+                            // Remove a linha da tabela
+                            tableModel.removeRow(selectedRow);
                         } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                            JOptionPane.showMessageDialog(rightPanel, "Erro ao excluir local: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
                         JOptionPane.showMessageDialog(rightPanel, "Erro ao obter ID do local.");

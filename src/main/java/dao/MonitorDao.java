@@ -1,9 +1,6 @@
 package dao;
 
-import model.Aluno;
-import model.Horario;
-import model.Local;
-import model.Monitor;
+import model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -106,13 +103,5 @@ public class MonitorDao {
              ex.printStackTrace();
          }
          return false;
-    }
-
-    public void definirHorario(Aluno disciplina, Horario horario, Local local) {
-
-    }
-
-    public void consultarHorarios(ArrayList<Horario> horario) {
-
     }
 }

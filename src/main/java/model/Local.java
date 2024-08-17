@@ -3,10 +3,9 @@ package model;
 public class Local {
     private int id;
     private String sala;
-    private int inscritos;
     private int capacidade;
 
-    public Local(){
+    public Local() {
 
     }
 
@@ -14,23 +13,35 @@ public class Local {
         this.sala = sala;
         this.capacidade = capacidade;
     }
-    public Local(int id, String sala, int inscritos, int capacidade) {
+
+    public Local(int id, String sala, int capacidade) {
         this.id = id;
         this.sala = sala;
-        this.inscritos = inscritos;
         this.capacidade = capacidade;
     }
 
     // Getters e setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getSala() { return sala; }
-    public void setSala(String sala) { this.sala = sala; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public int getInscritos() { return inscritos; }
-    public void setInscritos(int inscritos) { this.inscritos = inscritos; }
+    public String getSala() {
+        return sala;
+    }
 
-    public int getCapacidade() { return capacidade; }
-    public void setCapacidade(int capacidade) { this.capacidade = capacidade; }
+    public void setSala(String sala) {
+        this.sala = sala;
+    }
+
+    public int getCapacidade() {
+        return capacidade;
+    }
+
+    public void setCapacidade(int capacidade) {
+        this.capacidade = capacidade;
+    }
 }

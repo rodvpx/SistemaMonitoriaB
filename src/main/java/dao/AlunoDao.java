@@ -72,7 +72,7 @@ public class AlunoDao {
     public static List<Monitoria> buscarMinhasMonitorias(int idAluno) throws SQLException {
         List<Monitoria> monitorias = new ArrayList<>();
         String sql = "SELECT m.id, d.nome AS disciplina_nome, d.codigo AS disciplina_codigo, " +
-                "l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, " +
+                "l.sala, l.capacidade, h.dia_semana, h.horas, " +
                 "m.id_monitor, m.id_supervisor, COUNT(im.id_aluno) AS total_inscritos " +
                 "FROM inscricao_monitoria im " +
                 "JOIN monitoria m ON im.id_monitoria = m.id " +
@@ -81,10 +81,9 @@ public class AlunoDao {
                 "JOIN horario h ON m.horario = h.id " +
                 "LEFT JOIN inscricao_monitoria im2 ON m.id = im2.id_monitoria " +
                 "WHERE im.id_aluno = ? " +
-                "GROUP BY m.id, d.nome, d.codigo, l.sala, l.capacidade, l.inscritos, " +
+                "GROUP BY m.id, d.nome, d.codigo, l.sala, l.capacidade, " +
                 "h.dia_semana, h.horas, m.id_monitor, m.id_supervisor " +
                 "ORDER BY d.nome";
-
 
         try (Connection conn = getConexao();
              PreparedStatement sta = conn.prepareStatement(sql)) {
@@ -93,7 +92,7 @@ public class AlunoDao {
             try (ResultSet rs = sta.executeQuery()) {
                 while (rs.next()) {
                     Disciplina disciplina = new Disciplina(rs.getString("disciplina_nome"), rs.getString("disciplina_codigo"));
-                    Local local = new Local(rs.getInt("id"), rs.getString("sala"), rs.getInt("total_inscritos"), rs.getInt("capacidade"));
+                    Local local = new Local(rs.getInt("id"), rs.getString("sala"), rs.getInt("capacidade"));
                     Horario horario = new Horario(rs.getString("dia_semana"), rs.getString("horas"));
 
                     int idMonitor = rs.getInt("id_monitor");
@@ -113,6 +112,7 @@ public class AlunoDao {
     }
 
 
+
     public static Monitoria buscarPorId(int idMonitoria) throws SQLException {
         Monitoria monitoria = null;
 
@@ -125,7 +125,7 @@ public class AlunoDao {
                 "JOIN horario h ON m.horario = h.id " +
                 "LEFT JOIN inscricao_monitoria im ON m.id = im.id_monitoria " +
                 "WHERE m.id = ? " +
-                "GROUP BY m.id, d.nome, d.codigo, l.sala, l.capacidade, l.inscritos, h.dia_semana, h.horas, m.id_monitor, m.id_supervisor;";
+                "GROUP BY m.id, d.nome, d.codigo, l.sala, l.capacidade, h.dia_semana, h.horas, m.id_monitor, m.id_supervisor;";
 
         try (Connection conn = getConexao(); PreparedStatement sta = conn.prepareStatement(sql)) {
             sta.setInt(1, idMonitoria);
@@ -133,7 +133,7 @@ public class AlunoDao {
             try (ResultSet rs = sta.executeQuery()) {
                 if (rs.next()) {
                     Disciplina disciplina = new Disciplina(rs.getString("disciplina_nome"), rs.getString("disciplina_codigo"));
-                    Local local = new Local(rs.getInt("monitoria_id"), rs.getString("sala"), rs.getInt("total_inscritos"), rs.getInt("capacidade"));
+                    Local local = new Local(rs.getInt("monitoria_id"), rs.getString("sala"), rs.getInt("capacidade"));
                     Horario horario = new Horario(rs.getString("dia_semana"), rs.getString("horas"));
 
                     int idMonitor = rs.getInt("id_monitor");
@@ -150,15 +150,6 @@ public class AlunoDao {
         return monitoria;
     }
 
-
-
-    public static void solicitarMonitoria(Monitoria monitoria) {
-        // Implementação do método
-    }
-
-    public static void candidatarMonitor(Monitoria monitoria) {
-        // Implementação do método
-    }
 
     public static boolean inscreverMonitoria(int alunoId, int monitoriaId) throws SQLException {
         String sql = "INSERT INTO inscricao_monitoria (id_aluno, id_monitoria) VALUES (?, ?)";
